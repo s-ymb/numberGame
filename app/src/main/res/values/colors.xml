@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    // NumberGame用
+    <color name="cell_border_color_selected">#FFB0083E</color>
+    <color name="cell_border_color_not_selected">#FF0000FF</color>
+    <color name="cell_text_color_same_num">#FFB0083E</color>
+
+    <color name="cell_bg_color_default">#FFFFFFFF</color>
+    <color name="cell_bg_color_init">#FFE0E0E0</color>
+
+</resources>
+

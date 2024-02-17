@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">numberGame</string>
+    <string name="back_button">Back</string>
+    <string name="delete">Delete</string>
+    <string name="delete_question">Are you sure you want to delete?</string>
+    <string name="resume">resume</string>
+    <string name="resume_question">Are you sure you want to resume?</string>
+    <string name="no_satisfiedGrid_description">Oops!\nNo 正解パターンが登録されていません.\nTap + で追加登録.</string>
+    <string name="satisfiedGrid">satisfiedGrid</string>
+    <string name="satisfiedGrid_tbl_title">正解パターンの一覧</string>
+    <string name="satisfiedGrid_detail_title">正解パターンの詳細</string>
+    <string name="satisfiedGrid_entry_title">正解パターン追加</string>
+    <string name="satisfiedGrid_create_user_name">作成者：</string>
+    <string name="satisfiedGrid_create_dt">作成日：</string>
+
+    <string name="no_savedGrid_description">１件も保存されていません.</string>
+    <string name="savedGrid_tbl_title">保存の一覧</string>
+    <string name="savedGrid_detail_title">保存の詳細</string>
+    <string name="savedGrid_create_user_name">作成者：</string>
+    <string name="savedGrid_create_dt">作成日：</string>
+
+
+    <string name="number_game_screen_title">Number Game</string>
+    <string name="congratulations">Congratulations!</string>
+    <string name="exit">終了</string>
+    <string name="play_again">新規</string>
+    <string name="searchResult">検索結果</string>
+    <string name="close">閉じる</string>
+    <string name="err_btn_row_dup">同一行に同じ数字は選択出来ません</string>
+    <string name="err_btn_col_dup">同一列に同じ数字は選択出来ません</string>
+    <string name="err_btn_sq_dup">同一枠に同じ数字は選択出来ません</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="attention">Attention</string>
+
+</resources>
