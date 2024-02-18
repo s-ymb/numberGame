@@ -4,7 +4,8 @@ import android.content.Context
 
 interface AppContainer {
     val satisfiedGridTblRepository: SatisfiedGridTblRepository
-    val savedGridTblRepository: SavedGridTblRepository
+    val savedCellTblRepository: SavedCellTblRepository
+    val savedTblRepository: SavedTblRepository
 }
 
 /**
@@ -17,7 +18,10 @@ class AppDataContainer(private val context: Context) : AppContainer {
     override val satisfiedGridTblRepository: SatisfiedGridTblRepository by lazy {
         OfflineSatisfiedGridTblRepository(SatisfiedGridDataBase.getDatabase(context).satisfiedGridTblDao())
     }
-    override val savedGridTblRepository: SavedGridTblRepository by lazy {
-        OfflineSavedGridTblRepository(SavedGridDataBase.getDatabase(context).savedGridTblDao())
+    override val savedCellTblRepository: SavedCellTblRepository by lazy {
+        OfflineSavedCellTblRepository(SavedDataBase.getDatabase(context).savedCellTblDao())
+    }
+    override val savedTblRepository: SavedTblRepository by lazy {
+        OfflineSavedTblRepository(SavedDataBase.getDatabase(context).savedTblDao())
     }
 }

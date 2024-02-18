@@ -46,6 +46,7 @@ import com.s_ymb.numbergame.R
 import com.s_ymb.numbergame.data.CellData
 import com.s_ymb.numbergame.data.NumbergameData
 import com.s_ymb.numbergame.data.SatisfiedGrid
+import com.s_ymb.numbergame.data.SavedCellTbl
 import com.s_ymb.numbergame.data.SavedGrid
 import com.s_ymb.numbergame.data.toSatisfiedGrid
 import com.s_ymb.numbergame.data.toSavedGrid
@@ -55,11 +56,11 @@ import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailViewModel
 import com.s_ymb.numbergame.ui.theme.AppViewModelProvider
 import kotlinx.coroutines.launch
 
-object SavedGridDetailDestination : NavigationDestination {
+object SavedDetailDestination : NavigationDestination {
     override val route = "SavedGridGroup/savedGrid_details"
     override val titleRes = R.string.savedGrid_detail_title
-    const val savedGridIdArg = "itemId"
-    val routeWithArgs = "$route/{$savedGridIdArg}"
+    const val savedIdArg = "itemId"
+    val routeWithArgs = "$route/{$savedIdArg}"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,12 +71,13 @@ fun SavedGridDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: SavedGridDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val uiState = viewModel.uiState.collectAsState()
+    val savedTblUiState = viewModel.savedTblUiState.collectAsState()
+    val savedCellTblUiState = viewModel.savedCellTblUiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
             NumberGameTopAppBar(
-                title = stringResource(SavedGridDetailDestination.titleRes),
+                title = stringResource(SavedDetailDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
@@ -94,7 +96,8 @@ fun SavedGridDetailScreen(
         }, modifier = modifier
     ) { innerPadding ->
         SavedGridDetailsBody(
-            savedGridDetailsUiState = uiState.value,
+            savedTblUiState = savedTblUiState.value,
+            savedCellTblUiState = savedCellTblUiState.value,
             onDelete = {
                 // Note: If the user rotates the screen very fast, the operation may get cancelled
                 // and the item may not be deleted from the Database. This is because when config
@@ -105,7 +108,7 @@ fun SavedGridDetailScreen(
                     navigateBack()
                 }
             },
-            onResume = {navigateToNumberGameScreen(uiState.value.savedGridTbl.id)
+            onResume = {navigateToNumberGameScreen(savedTblUiState.value.savedTbl.id)
             },
             modifier = Modifier
                 .padding(innerPadding)
@@ -116,7 +119,8 @@ fun SavedGridDetailScreen(
 
 @Composable
 private fun SavedGridDetailsBody(
-    savedGridDetailsUiState: SavedGridDetailUiState,
+    savedTblUiState: SavedTblUiState,
+    savedCellTblUiState: SavedCellTblUiState,
     onDelete: () -> Unit,
     onResume: () -> Unit,
     modifier: Modifier = Modifier
@@ -128,7 +132,9 @@ private fun SavedGridDetailsBody(
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
         var resumeConfirmationRequired by rememberSaveable { mutableStateOf(false) }
         SavedGridDetail(
-            savedGrid = savedGridDetailsUiState.savedGridTbl.toSavedGrid(), modifier = Modifier.fillMaxWidth()
+            savedTblUiState = savedTblUiState,
+            savedCellTblList = savedCellTblUiState.savedCellTblList,
+            modifier = Modifier.fillMaxWidth()
         )
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
@@ -170,7 +176,9 @@ private fun SavedGridDetailsBody(
 
 @Composable
 fun SavedGridDetail(
-    savedGrid: SavedGrid, modifier: Modifier = Modifier
+    savedTblUiState: SavedTblUiState,
+    savedCellTblList: List<SavedCellTbl>,
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier, colors = CardDefaults.cardColors(
@@ -186,7 +194,7 @@ fun SavedGridDetail(
         ) {
             SavedGridDetailsRow(
                 labelResID = R.string.satisfiedGrid_create_user_name,
-                itemDetail = savedGrid.createUser,
+                itemDetail = savedTblUiState.savedTbl.createUser,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
                         id = R.dimen
@@ -196,7 +204,7 @@ fun SavedGridDetail(
             )
             SavedGridDetailsRow(
                 labelResID = R.string.satisfiedGrid_create_dt,
-                itemDetail = savedGrid.createDt,
+                itemDetail = savedTblUiState.savedTbl.createDt,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
                         id = R.dimen
@@ -206,7 +214,7 @@ fun SavedGridDetail(
             )
             //グリッドを表示
             NumberGridRow(
-                data = savedGrid.data,
+                dataList = savedCellTblList,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
                         id = R.dimen
@@ -231,9 +239,18 @@ private fun SavedGridDetailsRow(
 
 @Composable
 private fun NumberGridRow(
-    data: Array<Array<CellData>>,
-    modifier: Modifier = Modifier
+    dataList: List<SavedCellTbl>,
+    modifier: Modifier = Modifier,
 ) {
+    // 空のアレイを作成し、引数のリストに含まれるデータで更新する
+    val data : Array<Array<CellData>> =
+    Array(NumbergameData.NUM_OF_ROW) { Array(NumbergameData.NUM_OF_COL) { CellData(0, false) } }
+
+    dataList.forEach{
+        data[it.row][it.col].num = it.num
+        data[it.row][it.col].init = it.init
+    }
+
     Row(
         verticalAlignment = Alignment.Top,
 //        modifier = modifier

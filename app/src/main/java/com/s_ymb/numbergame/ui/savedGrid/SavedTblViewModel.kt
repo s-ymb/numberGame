@@ -2,25 +2,25 @@ package com.s_ymb.numbergame.ui.savedGrid
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.s_ymb.numbergame.data.SavedGridTbl
-import com.s_ymb.numbergame.data.SavedGridTblRepository
+import com.s_ymb.numbergame.data.AppContainer
+import com.s_ymb.numbergame.data.SavedTbl
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class SavedGridTblViewModel(savedGridTblRepository: SavedGridTblRepository) : ViewModel()  {
+class SavedTblViewModel(private val appContainer: AppContainer) : ViewModel()  {
 
     /**
      * Holds home ui state. The list of items are retrieved from [ItemsRepository] and mapped to
      * [HomeUiState]
      */
-    val savedGridTblUiState: StateFlow<SavedGridTblUiState> =
-        savedGridTblRepository.getAllGrids().map { SavedGridTblUiState(it) }
+    val savedTblUiState: StateFlow<SavedTblListUiState> =
+        appContainer.savedTblRepository.getAllGrids().map { SavedTblListUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = SavedGridTblUiState()
+                initialValue = SavedTblListUiState()
             )
 
     companion object {
@@ -31,6 +31,6 @@ class SavedGridTblViewModel(savedGridTblRepository: SavedGridTblRepository) : Vi
 /**
  * Ui State for HomeScreen
  */
-data class SavedGridTblUiState(val savedGridTblList: List<SavedGridTbl> = listOf())
+data class SavedTblListUiState(val savedTblList: List<SavedTbl> = listOf())
 
 

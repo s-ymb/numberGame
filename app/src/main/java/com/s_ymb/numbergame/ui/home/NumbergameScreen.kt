@@ -50,7 +50,7 @@ import com.s_ymb.numbergame.data.ScreenCellData
 import com.s_ymb.numbergame.data.dupErr
 import com.s_ymb.numbergame.ui.navigation.NavigationDestination
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailDestination
-import com.s_ymb.numbergame.ui.savedGrid.SavedGridDetailDestination
+import com.s_ymb.numbergame.ui.savedGrid.SavedDetailDestination
 import com.s_ymb.numbergame.ui.theme.AppViewModelProvider
 
 object NumberGameScreenDestination : NavigationDestination {

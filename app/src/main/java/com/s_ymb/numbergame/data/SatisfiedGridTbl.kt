@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 data class SatisfiedGridTbl(
     @PrimaryKey(autoGenerate = false)
     val gridData: String = "",
-    @ColumnInfo(name = "create_date")
+    @ColumnInfo(name = "create_dt")
     val createDt: String = "",
     @ColumnInfo(name = "create_user")
     val createUser: String = "",

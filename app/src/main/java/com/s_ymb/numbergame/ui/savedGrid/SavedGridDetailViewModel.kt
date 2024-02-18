@@ -3,12 +3,16 @@ package com.s_ymb.numbergame.ui.savedGrid
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.s_ymb.numbergame.data.AppContainer
 import com.s_ymb.numbergame.data.SatisfiedGridTbl
 import com.s_ymb.numbergame.data.SatisfiedGridTblRepository
+import com.s_ymb.numbergame.data.SavedCellTbl
 import com.s_ymb.numbergame.data.SavedGridTbl
 import com.s_ymb.numbergame.data.SavedGridTblRepository
+import com.s_ymb.numbergame.data.SavedTbl
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailDestination
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -18,26 +22,35 @@ import kotlinx.coroutines.launch
 
 class SavedGridDetailViewModel (
     savedStateHandle: SavedStateHandle,
-    private val savedGridRepository: SavedGridTblRepository,
-    ) : ViewModel() {
-        private val id: Int = checkNotNull(savedStateHandle[SavedGridDetailDestination.savedGridIdArg])
-
-        val uiState: StateFlow<SavedGridDetailUiState> =
-            savedGridRepository.getGrid(id)
-                .filterNotNull()
-                .map {
-                    SavedGridDetailUiState(savedGridTbl = it)
-                }.stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                    initialValue = SavedGridDetailUiState()
-                )
+    private val appContainer: AppContainer,
+) : ViewModel() {
+    private val id: Int = checkNotNull(savedStateHandle[SavedDetailDestination.savedIdArg])
+    private val savedRepo = appContainer.savedTblRepository
+    val savedTblUiState: StateFlow<SavedTblUiState> = savedRepo.getGrid(id)
+            .filterNotNull()
+            .map {
+                SavedTblUiState(it)
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = SavedTblUiState()
+            )
+    private val savedCellRepo = appContainer.savedCellTblRepository
+    val savedCellTblUiState: StateFlow<SavedCellTblUiState> = savedCellRepo.getGrids(id)
+        .filterNotNull()
+        .map {
+            SavedCellTblUiState(it)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+            initialValue = SavedCellTblUiState()
+        )
     /**
      * Deletes the item from the [ItemsRepository]'s data source.
      */
     suspend fun deleteItem() {
         viewModelScope.launch(Dispatchers.IO) {
-            savedGridRepository.delete(uiState.value.savedGridTbl.id)
+            savedRepo.delete(id)
         }
     }
 
@@ -48,6 +61,9 @@ class SavedGridDetailViewModel (
 }
 
 
-data class SavedGridDetailUiState(
-    val savedGridTbl: SavedGridTbl = SavedGridTbl()
+
+data class SavedCellTblUiState(
+    val savedCellTblList: List<SavedCellTbl> = listOf()
 )
+
+data class SavedTblUiState(val savedTbl: SavedTbl = SavedTbl())

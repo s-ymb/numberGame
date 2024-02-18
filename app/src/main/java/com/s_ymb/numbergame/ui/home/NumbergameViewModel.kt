@@ -15,9 +15,11 @@ import com.s_ymb.numbergame.data.SatisfiedGrid
 import com.s_ymb.numbergame.data.SatisfiedGridList
 import com.s_ymb.numbergame.data.SatisfiedGridTbl
 import com.s_ymb.numbergame.data.SatisfiedGridTblRepository
+import com.s_ymb.numbergame.data.SavedCellTbl
 import com.s_ymb.numbergame.data.SavedGrid
 import com.s_ymb.numbergame.data.SavedGridTbl
 import com.s_ymb.numbergame.data.SavedGridTblRepository
+import com.s_ymb.numbergame.data.SavedTbl
 import com.s_ymb.numbergame.data.ScreenBtnData
 import com.s_ymb.numbergame.data.ScreenCellData
 import com.s_ymb.numbergame.data.dupErr
@@ -26,7 +28,7 @@ import com.s_ymb.numbergame.data.toSatisfiedGridTbl
 import com.s_ymb.numbergame.data.toSavedGrid
 import com.s_ymb.numbergame.data.toSavedGridTbl
 import com.s_ymb.numbergame.ui.navigation.NavigationDestination
-import com.s_ymb.numbergame.ui.savedGrid.SavedGridDetailDestination
+import com.s_ymb.numbergame.ui.savedGrid.SavedDetailDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,8 +41,8 @@ import java.time.format.DateTimeFormatter
 object NumbergameDestination : NavigationDestination {
     override val route = ""
     override val titleRes = R.string.savedGrid_detail_title
-    const val savedGridIdArg = "itemId"
-    val routeWithArgs = "$route/{$savedGridIdArg}"
+    const val savedIdArg = "itemId"
+    val routeWithArgs = "$route/{$savedIdArg}"
 }
 
 
@@ -79,7 +81,9 @@ class NumbergameViewModel(
     private val satisfiedList = SatisfiedGridList()         //正解リスト
 
     private val satisfiedRepo = appContainer.satisfiedGridTblRepository
-    private val savedRepo = appContainer.savedGridTblRepository
+//    private val savedRepo = appContainer.savedGridTblRepository
+    private val savedTblRepo = appContainer.savedTblRepository
+    private val savedCellTblRepo = appContainer.savedCellTblRepository
     // ↓ 保存一覧以外からの遷移の場合はNULL
     private val id: Int ?= savedStateHandle[NumberGameScreenDestination.NumberGameScreenIdArg]
 
@@ -100,11 +104,31 @@ class NumbergameViewModel(
 
     private fun getSaved(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val savedGridTbl = savedRepo.get(id)
+//            val savedGridTbl = savedRepo.get(id)
+            val savedTbl = savedTblRepo.get(id)
             //指定IDのデータが存在すれば
-            if(null != savedGridTbl){
-                val data: SavedGrid = savedGridTbl.toSavedGrid()
-                gridData.resumeGame(data.data)
+            if(null != savedTbl){
+                // とりあえず作成者・作成日は無視するので saveTbl の記述はなし
+                // val data: SavedGrid = savedTbl.toSavedGrid()
+                // gridData.resumeGame(data.data)
+                //
+
+                // SavedCellTbl より 指定IDのデータを取得しGridData にセットする
+                val data:  Array<Array<CellData>> =
+                                Array(NumbergameData.NUM_OF_ROW)
+                                {
+                                    Array(NumbergameData.NUM_OF_COL)
+                                        { CellData(0, false)
+                                    }
+                                }
+                val savedCellTblList: List<SavedCellTbl> = savedCellTblRepo.get(id)
+                savedCellTblList.forEach{
+                    data[it.row][it.col].num = it.num
+                    data[it.row][it.col].init = it.init
+                }
+                gridData.resumeGame(data)
+
+                // 画面表示
                 setGridDataToUiState()
             }
         }
@@ -134,6 +158,7 @@ class NumbergameViewModel(
                                             gridData = gridData))
     }
 
+/*
     private suspend fun insertSavedGrid(createUser: String = "", gridData: String = "", gridDataIsInit: String = "") {
         val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ISO_DATE_TIME
@@ -145,14 +170,42 @@ class NumbergameViewModel(
                                     gridData = gridData,
                                     gridDataIsInit =  gridDataIsInit, ))
     }
+*/
+    private suspend fun insertSaved(createUser: String = "", data: Array<Array<CellData>> =
+        Array(NumbergameData.NUM_OF_ROW) { Array(NumbergameData.NUM_OF_COL) { CellData(0, false) } })
+    {
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+        val currentString = current.format(formatter)
 
+        // savedTbl に登録
+        val insertedId = savedTblRepo.insert(
+            SavedTbl(createUser = createUser, createDt = currentString)).toInt()
+        // saveCellTbl に登録
+        for((rowIdx, rowData) in data.withIndex()){
+            for((colIdx, cellData) in rowData.withIndex()){
+                if(cellData.num != NumbergameData.NUM_NOT_SET){
+                    //未設定のデータ以外はSavedCellTbl に保存
+                    savedCellTblRepo.insert(
+                        SavedCellTbl(
+                                id = insertedId,
+                                row = rowIdx,
+                                col = colIdx,
+                                num = cellData.num,
+                                init = cellData.init
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     /*
         データクラスとviewModelの選択中のセルの情報を基にUIステートに値を設定する
     */
     private fun setGridDataToUiState() {
         //ui state にセル情報設定用の変数
-        var tmpData: Array<Array<ScreenCellData>> = Array(NumbergameData.NUM_OF_ROW)
+        val tmpData: Array<Array<ScreenCellData>> = Array(NumbergameData.NUM_OF_ROW)
         {
             Array(NumbergameData.NUM_OF_COL)
             {
@@ -257,8 +310,8 @@ class NumbergameViewModel(
      */
     fun newGame(){
         //正解リストより初期値を設定する
-        var satisfiedIdx: Int=  (0 until satisfiedList.dataList.size).random()
-        gridData.newGame(satisfiedList.dataList.get(satisfiedIdx).data, fixCellCnt)
+        val satisfiedIdx: Int=  (0 until satisfiedList.dataList.size).random()
+        gridData.newGame(satisfiedList.dataList[satisfiedIdx].data, fixCellCnt)
         //選択中セルの初期化
         selectedCol = NumbergameData.IMPOSSIBLE_IDX
         selectedRow = NumbergameData.IMPOSSIBLE_IDX
@@ -350,6 +403,7 @@ class NumbergameViewModel(
             一時保存ボタンが押された時の処理
      */
     fun onSaveBtnClicked(){
+/*
         var gridDataString: String = ""
         var gridDataIsInitString: String = ""
         for(rowIdx in 0 until NumbergameData.NUM_OF_ROW) {
@@ -364,9 +418,10 @@ class NumbergameViewModel(
                 }
             }
         }
+ */
         viewModelScope.launch(Dispatchers.IO) {
             //０件の場合データ追加
-            insertSavedGrid(createUser = "User", gridData = gridDataString, gridDataIsInit = gridDataIsInitString)
+            insertSaved(createUser = "User", gridData.data)
         }
     }
 }

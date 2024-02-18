@@ -17,10 +17,11 @@ import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridEntryDestination
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridEntryScreen
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridTblDestination
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridTblScreen
-import com.s_ymb.numbergame.ui.savedGrid.SavedGridDetailDestination
+import com.s_ymb.numbergame.ui.savedGrid.SavedDetailDestination
 import com.s_ymb.numbergame.ui.savedGrid.SavedGridDetailScreen
-import com.s_ymb.numbergame.ui.savedGrid.SavedGridTblDestination
-import com.s_ymb.numbergame.ui.savedGrid.SavedGridTblScreen
+import com.s_ymb.numbergame.ui.savedGrid.SavedTblDestination
+import com.s_ymb.numbergame.ui.savedGrid.SavedTblScreen
+import com.s_ymb.numbergame.ui.savedGrid.SavedTblScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -66,20 +67,20 @@ fun NumberGameNavHost(
                 )
             }
         }
-        navigation(startDestination = SavedGridTblDestination.route, route = "SavedGridGroup")
+        navigation(startDestination = SavedTblDestination.route, route = "SavedGridGroup")
         {
-            composable(route = SavedGridTblDestination.route) {
-                SavedGridTblScreen(
+            composable(route = SavedTblDestination.route) {
+                SavedTblScreen(
                     navigateBack = { navController.navigateUp() },
                     navigateToSavedGridDetail = {
-                        navController.navigate("${SavedGridDetailDestination.route}/${it}")
+                        navController.navigate("${SavedDetailDestination.route}/${it}")
                     },
                 )
             }
 
             composable(
-                route = SavedGridDetailDestination.routeWithArgs,
-                arguments = listOf(navArgument(SavedGridDetailDestination.savedGridIdArg) {
+                route = SavedDetailDestination.routeWithArgs,
+                arguments = listOf(navArgument(SavedDetailDestination.savedIdArg) {
                     type = NavType.IntType
                 })
             ) {
@@ -98,7 +99,7 @@ fun NumberGameNavHost(
         ){
             GameScreen(
                 navigateToSatisfiedGridTbl = { navController.navigate(SatisfiedGridTblDestination.route) },
-                navigateToSavedGridTbl = { navController.navigate(SavedGridTblDestination.route) },
+                navigateToSavedGridTbl = { navController.navigate(SavedTblDestination.route) },
             )
         }
     }

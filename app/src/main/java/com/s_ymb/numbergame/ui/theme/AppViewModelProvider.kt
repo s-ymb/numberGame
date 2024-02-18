@@ -12,7 +12,7 @@ import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridTblViewModel
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailViewModel
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridEntryViewModel
 import com.s_ymb.numbergame.ui.savedGrid.SavedGridDetailViewModel
-import com.s_ymb.numbergame.ui.savedGrid.SavedGridTblViewModel
+import com.s_ymb.numbergame.ui.savedGrid.SavedTblViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -49,14 +49,14 @@ object AppViewModelProvider {
         initializer {
             SavedGridDetailViewModel(
                 this.createSavedStateHandle(),
-                numberGameApplication().container.savedGridTblRepository
+                numberGameApplication().container
             )
         }
 
         // Initializer for SavedGridTblViewModel
         initializer {
-            SavedGridTblViewModel(
-                numberGameApplication().container.savedGridTblRepository)
+            SavedTblViewModel(
+                numberGameApplication().container)
         }
     }
 }
