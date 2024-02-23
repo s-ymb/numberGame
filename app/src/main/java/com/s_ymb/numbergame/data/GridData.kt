@@ -26,7 +26,7 @@ class GridData() : NumbergameData() {
             }
         }
         val dataCheckResult: dupErr = checkData(tmp, row, col, newNum)
-        if (dupErr.NO_DUP == dataCheckResult) {
+        if (NO_DUP == dataCheckResult) {
             //チェックOKの場合、データに反映する。
             data[row][col].num = newNum
             data[row][col].init = isInit
@@ -45,7 +45,7 @@ class GridData() : NumbergameData() {
         // 未設定列を探し、
         for (rowIdx: Int in 0 until NUM_OF_ROW) {
             for (colIdx in 0 until NUM_OF_COL) {
-                if (tmp[rowIdx][colIdx] == NumbergameData.NUM_NOT_SET) {
+                if (tmp[rowIdx][colIdx] == NUM_NOT_SET) {
                     // 未設定列を見つけたら
                     for (setNum in 1..KIND_OF_DATA) {
                         // 1 ～ 9 の数字を試してみる
@@ -58,7 +58,7 @@ class GridData() : NumbergameData() {
                                 return retList
                             }
                             // 回答数が取得出来たら元に戻す
-                            tmp[rowIdx][colIdx] = NumbergameData.NUM_NOT_SET
+                            tmp[rowIdx][colIdx] = NUM_NOT_SET
                         }
                     }
                     // 試してみた結果の回答リストを返却（入力値：1 ～ 9 全て重複が発生するなら 回答数は0
@@ -155,7 +155,7 @@ class GridData() : NumbergameData() {
                 // 全データクリアの場合もしくは初期列以外の場合
                 if((withFixCell) || !data[rowIdx][colIdx].init) {
                     // データを初期化
-                    data[rowIdx][colIdx].num = NumbergameData.NUM_NOT_SET
+                    data[rowIdx][colIdx].num = NUM_NOT_SET
                     data[rowIdx][colIdx].init = false
                 }
             }

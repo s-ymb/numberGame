@@ -288,7 +288,7 @@ class NumbergameViewModel(
     */
     fun searchAnsCnt() {
         val ansCnt = Array(NumbergameData.KIND_OF_DATA + 1) { 0 }
-        var retList: MutableList<Array<Array<Int>>> = mutableListOf()
+        var retList: MutableList<Array<Array<Int>>>
         if ((selectedRow != NumbergameData.IMPOSSIBLE_IDX) && (selectedCol != NumbergameData.IMPOSSIBLE_IDX)) {
             for (num in 1..NumbergameData.KIND_OF_DATA) {
                 retList = gridData.searchAnswer(selectedRow, selectedCol, num)

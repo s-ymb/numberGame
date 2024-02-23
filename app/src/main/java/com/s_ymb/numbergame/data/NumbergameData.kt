@@ -3,7 +3,7 @@ package com.s_ymb.numbergame.data
 open class NumbergameData {
     companion object {
         const val NUM_NOT_SET: Int = 0
-        const val IMPOSSIBLE_NUM: Int = -1
+//        const val IMPOSSIBLE_NUM: Int = -1
         const val NUM_OF_COL: Int = 9             // 全体で９行
         const val NUM_OF_ROW: Int = 9             // 全体で９列
         const val NUM_OF_SQR: Int = 9             // 全体で９枠
@@ -44,7 +44,7 @@ open class NumbergameData {
         行重複チェック
     */
     private fun rowCheck(checkGrid: Array<Array<Int>>, checkRowIdx: Int): Boolean {
-        val oneRow = Array(NUM_OF_COL) { NumbergameData.NUM_NOT_SET }               // １行分のデータ配列
+        val oneRow = Array(NUM_OF_COL) { NUM_NOT_SET }               // １行分のデータ配列
         // チェック対象行の値を取得
         for (colIdx in 0 until NUM_OF_COL) {
             oneRow[colIdx] = checkGrid[checkRowIdx][colIdx]
@@ -100,7 +100,7 @@ open class NumbergameData {
         for (num in checkArray) {
             if (isExist[num]) {
                 // num番目の要素はすでに存在していて、未設定値との比較以外では重複と判定
-                if (num != NumbergameData.NUM_NOT_SET) {
+                if (num != NUM_NOT_SET) {
                     return false
                 }
             }
