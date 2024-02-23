@@ -9,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.s_ymb.numbergame.ui.home.GameScreen
-
 import com.s_ymb.numbergame.ui.home.NumberGameScreenDestination
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailDestination
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailScreen
@@ -21,7 +20,6 @@ import com.s_ymb.numbergame.ui.savedGrid.SavedDetailDestination
 import com.s_ymb.numbergame.ui.savedGrid.SavedGridDetailScreen
 import com.s_ymb.numbergame.ui.savedGrid.SavedTblDestination
 import com.s_ymb.numbergame.ui.savedGrid.SavedTblScreen
-import com.s_ymb.numbergame.ui.savedGrid.SavedTblScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -30,7 +28,7 @@ import com.s_ymb.numbergame.ui.savedGrid.SavedTblScreen
 
 
 @Composable
-fun NumberGameNavHost(
+fun NumbergameNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {

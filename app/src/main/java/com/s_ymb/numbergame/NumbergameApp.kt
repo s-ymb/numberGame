@@ -15,7 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.s_ymb.numbergame.R.string
-import com.s_ymb.numbergame.ui.navigation.NumberGameNavHost
+import com.s_ymb.numbergame.ui.navigation.NumbergameNavHost
 
 /**
  * Top level composable that represents screens for the application.
@@ -23,7 +23,7 @@ import com.s_ymb.numbergame.ui.navigation.NumberGameNavHost
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NumberGameApp(navController: NavHostController = rememberNavController()) {
-    NumberGameNavHost(navController = navController)
+    NumbergameNavHost(navController = navController)
 }
 
 /**

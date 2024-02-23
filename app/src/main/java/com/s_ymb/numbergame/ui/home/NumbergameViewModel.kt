@@ -7,7 +7,7 @@ import com.s_ymb.numbergame.data.AppContainer
 import com.s_ymb.numbergame.data.CellData
 import com.s_ymb.numbergame.data.GridData
 import com.s_ymb.numbergame.data.NumbergameData
-import com.s_ymb.numbergame.data.SatisfiedGridList
+import com.s_ymb.numbergame.data.SatisfiedGridData
 import com.s_ymb.numbergame.data.SatisfiedGridTbl
 import com.s_ymb.numbergame.data.SavedCellTbl
 import com.s_ymb.numbergame.data.SavedTbl
@@ -33,29 +33,6 @@ object NumbergameDestination : NavigationDestination {
 }
 
 
-/*
-class NumbergameViewModelFactory(private val appContainer: AppContainer) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NumbergameViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return NumbergameViewModel(appContainer) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-*/
-/*
-class NumbergameViewModelFactory(private val gridData: GridData) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NumbergameViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return NumbergameViewModel(gridData) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-*/
-
 class NumbergameViewModel(
     savedStateHandle: SavedStateHandle,
     private val appContainer: AppContainer) : ViewModel() {
@@ -65,7 +42,7 @@ class NumbergameViewModel(
     public val uiState: StateFlow<NumbergameUiState> = _uiState.asStateFlow()
 
     private val gridData = GridData()
-    private val satisfiedList = SatisfiedGridList()         //正解リスト
+    private val satisfiedGridData = SatisfiedGridData()         //正解リスト
 
     private val satisfiedRepo = appContainer.satisfiedGridTblRepository
 //    private val savedRepo = appContainer.savedGridTblRepository
@@ -84,7 +61,7 @@ class NumbergameViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val satisfiedGrids = satisfiedRepo.getAll()
             satisfiedGrids.forEach {
-                satisfiedList.dataList.add(it.toSatisfiedGrid())
+                satisfiedGridData.add(it.toSatisfiedGrid())
             }
         }
     }
@@ -196,7 +173,7 @@ class NumbergameViewModel(
         {
             Array(NumbergameData.NUM_OF_COL)
             {
-                ScreenCellData(CellData.NUM_NOT_SET,  false, false, false)
+                ScreenCellData(NumbergameData.NUM_NOT_SET,  false, false, false)
             }
         }
         //ui stateにボタン情報設定用の変数
@@ -228,13 +205,13 @@ class NumbergameViewModel(
                 }
                 // 選択中のセルと同じ数字の場合（空白以外）、UIで強調表示するためフラグを設定
                 tmpData[rowIdx][colIdx].isSameNum = false
-                if(selectedNum != CellData.NUM_NOT_SET) {
+                if(selectedNum != NumbergameData.NUM_NOT_SET) {
                     if (selectedNum == gridData.data[rowIdx][colIdx].num) {
                         tmpData[rowIdx][colIdx].isSameNum = true
                     }
                 }
                 //未設定セルの数をカウント
-                if(gridData.data[rowIdx][colIdx].num == CellData.NUM_NOT_SET){
+                if(gridData.data[rowIdx][colIdx].num == NumbergameData.NUM_NOT_SET){
                     //未設定セルの場合、未設定セルの数をカウントアップ
                     blankCellCnt++
                 }
@@ -297,8 +274,7 @@ class NumbergameViewModel(
      */
     fun newGame(){
         //正解リストより初期値を設定する
-        val satisfiedIdx: Int=  (0 until satisfiedList.dataList.size).random()
-        gridData.newGame(satisfiedList.dataList[satisfiedIdx].data, fixCellCnt)
+        gridData.newGame(satisfiedGridData.getSatisfied(), fixCellCnt)
         //選択中セルの初期化
         selectedCol = NumbergameData.IMPOSSIBLE_IDX
         selectedRow = NumbergameData.IMPOSSIBLE_IDX
@@ -309,7 +285,7 @@ class NumbergameViewModel(
 
     /*
         正解パターン数検索
-     */
+    */
     fun searchAnsCnt() {
         val ansCnt = Array(NumbergameData.KIND_OF_DATA + 1) { 0 }
         var retList: MutableList<Array<Array<Int>>> = mutableListOf()

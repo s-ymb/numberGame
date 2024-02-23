@@ -3,19 +3,14 @@ package com.s_ymb.numbergame.ui.satisfiedGrid
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.s_ymb.numbergame.data.SatisfiedGrid
 import com.s_ymb.numbergame.data.SatisfiedGridTbl
 import com.s_ymb.numbergame.data.SatisfiedGridTblRepository
-import com.s_ymb.numbergame.data.toSatisfiedGrid
-import com.s_ymb.numbergame.data.toSatisfiedGridTbl
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailDestination.satisfiedGridIdArg
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class SatisfiedGridDetailViewModel(
     savedStateHandle: SavedStateHandle,
@@ -37,9 +32,9 @@ class SatisfiedGridDetailViewModel(
      * Deletes the item from the [ItemsRepository]'s data source.
      */
     suspend fun deleteItem() {
-        viewModelScope.launch(Dispatchers.IO) {
+//        viewModelScope.launch(Dispatchers.IO) {
             satisfiedGridRepository.delete(uiState.value.satisfiedGridTbl.gridData)
-        }
+//        }
     }
 
 

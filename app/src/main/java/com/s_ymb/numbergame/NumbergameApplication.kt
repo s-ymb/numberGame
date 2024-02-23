@@ -4,7 +4,7 @@ import android.app.Application
 import com.s_ymb.numbergame.data.AppContainer
 import com.s_ymb.numbergame.data.AppDataContainer
 
-class NumberGameApplication : Application() {
+class NumbergameApplication : Application() {
     lateinit var container: AppContainer
 
     override fun onCreate() {

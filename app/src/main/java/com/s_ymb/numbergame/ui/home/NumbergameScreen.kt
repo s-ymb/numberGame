@@ -10,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,7 +17,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,16 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.s_ymb.numbergame.NumberGameTopAppBar
 import com.s_ymb.numbergame.R
-import com.s_ymb.numbergame.data.CellData
 import com.s_ymb.numbergame.data.NumbergameData
 import com.s_ymb.numbergame.data.ScreenBtnData
 import com.s_ymb.numbergame.data.ScreenCellData
 import com.s_ymb.numbergame.data.dupErr
 import com.s_ymb.numbergame.ui.navigation.NavigationDestination
-import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailDestination
-import com.s_ymb.numbergame.ui.savedGrid.SavedDetailDestination
 import com.s_ymb.numbergame.ui.theme.AppViewModelProvider
 
 object NumberGameScreenDestination : NavigationDestination {
@@ -185,7 +179,7 @@ fun NumberGridLayout(
                     bgColor = colorResource(R.color.cell_bg_color_init)
                 }
                 var numStr: String = ""
-                if (cell.num != CellData.NUM_NOT_SET) {
+                if (cell.num != NumbergameData.NUM_NOT_SET) {
                     numStr = cell.num.toString()
                 }
                 Text(
@@ -294,7 +288,7 @@ fun NumBtnLayout(
         }
         //削除ボタン
         Button(
-            onClick = { onNumBtnClicked(CellData.NUM_NOT_SET) },
+            onClick = { onNumBtnClicked(NumbergameData.NUM_NOT_SET) },
         ) {
             Text(text = "削除")
         }

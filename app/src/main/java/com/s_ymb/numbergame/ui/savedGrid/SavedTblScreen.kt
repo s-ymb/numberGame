@@ -33,11 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.s_ymb.numbergame.NumberGameTopAppBar
 import com.s_ymb.numbergame.R
-import com.s_ymb.numbergame.data.SavedGridTbl
 import com.s_ymb.numbergame.data.SavedTbl
 import com.s_ymb.numbergame.ui.navigation.NavigationDestination
 import com.s_ymb.numbergame.ui.theme.AppViewModelProvider
-import com.s_ymb.numbergame.ui.theme.NumberGameTheme
+import com.s_ymb.numbergame.ui.theme.NumbergameTheme
 
 
 object SavedTblDestination : NavigationDestination {
@@ -70,7 +69,7 @@ fun SavedTblScreen(
                 scrollBehavior = scrollBehavior
             )
         },
-    ) { innerPadding ->
+        ) { innerPadding ->
         SavedTblBody(
             savedTblList = savedTblUiState.savedTblList,
             onItemClick = navigateToSavedGridDetail,
@@ -161,7 +160,7 @@ fun HomeBodyPreview() {
 @Preview(showBackground = true)
 @Composable
 fun HomeBodyEmptyListPreview() {
-    NumberGameTheme {
+    NumbergameTheme {
 //        HomeBody(listOf(), onItemClick = {})
     }
 }
