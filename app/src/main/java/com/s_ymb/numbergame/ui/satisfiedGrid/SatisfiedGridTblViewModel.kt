@@ -35,7 +35,6 @@ class SatisfiedGridTblViewModel(satisfiedGridTblRepository: SatisfiedGridTblRepo
         // 新規の正解パターンを作成する
         var retList: MutableList<Array<Array<Int>>> = satisfied.createNew()
 
-        // TODO：retList でレポジトリ登録
 
         val satisfiedGridTbl: SatisfiedGridTbl = SatisfiedGridTbl()
        // satisfiedGridTblRepository に登録
