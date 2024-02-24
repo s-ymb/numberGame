@@ -5,5 +5,5 @@ enum class dupErr {
     ROW_DUP,    //行で重複
     COL_DUP,    //列で重複
     SQ_DUP,     //四角いエリアで重複
-    ANY_DUP     //その他何かで重複（未定義）
+    FIX_DUP,         //初期値なので変更不可
 }

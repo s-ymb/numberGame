@@ -14,7 +14,7 @@ class OfflineSatisfiedGridTblRepository(private val satisfiedGridTableDao: Satis
 
     override fun getCnt(data: String): Int = satisfiedGridTableDao.getCnt(data)
 
-    override suspend fun insert(grid: SatisfiedGridTbl) = satisfiedGridTableDao.insertSatisfiedGrid(grid)
+    override suspend fun insert(satisfiedGridTbl: SatisfiedGridTbl) = satisfiedGridTableDao.insertSatisfiedGrid(satisfiedGridTbl)
 
-    override fun delete(gridData: String) = satisfiedGridTableDao.delete(gridData)
+    override fun delete(data: String) = satisfiedGridTableDao.delete(data)
 }

@@ -1,21 +1,21 @@
 package com.s_ymb.numbergame.data
 
-import com.s_ymb.numbergame.data.dupErr.ANY_DUP
 import com.s_ymb.numbergame.data.dupErr.NO_DUP
 import kotlin.random.Random
 
-class GridData() : NumbergameData() {
-    val data: Array<Array<CellData>> =
-        Array(NUM_OF_ROW) { Array(NUM_OF_COL) { CellData(0, false) } }
+class GridData(
+        val data: Array<Array<CellData>> = Array(NUM_OF_ROW) { Array(NUM_OF_COL) { CellData(0, false) } }
+        ) : NumbergameData() {
+//    val data: Array<Array<CellData>> = _data
+
     /*
         データの指定位置に指定データが設定可能か判定して可能な場合、値を設定する
         同じ数字が範囲内に重複する場合、範囲に応じたエラーを返す。
         （初期値の上書き判定は行わない → view で制限をかける）
      */
-
-    public fun setData(row: Int, col: Int, newNum: Int, isInit: Boolean): dupErr {
+    fun setData(row: Int, col: Int, newNum: Int, isInit: Boolean): dupErr {
         if(data[row][col].init){
-            return ANY_DUP      //後で直す
+            return dupErr.FIX_DUP      //後で直す
         }
 
         // いままでに設定されている値をコピー
@@ -42,9 +42,9 @@ class GridData() : NumbergameData() {
     private fun findAnswerRecursive(tmp: Array<Array<Int>>, endByFind: Boolean): MutableList<Array<Array<Int>>> {
         val retList: MutableList<Array<Array<Int>>> = mutableListOf()   //見つけた正解リスト
 
-        // 未設定列を探し、
         for (rowIdx: Int in 0 until NUM_OF_ROW) {
             for (colIdx in 0 until NUM_OF_COL) {
+                // 未設定列を探す
                 if (tmp[rowIdx][colIdx] == NUM_NOT_SET) {
                     // 未設定列を見つけたら
                     for (setNum in 1..KIND_OF_DATA) {
@@ -91,7 +91,7 @@ class GridData() : NumbergameData() {
         新規データ作成
         回答配列(satisfiedArray)より指定個数の数字(fixCellSelected)を問題データとして設定する
     */
-    public fun newGame(satisfiedArray: Array<IntArray>, fixCellSelected: Int) {
+    fun newGame(satisfiedArray: Array<IntArray>, fixCellSelected: Int) {
 
         // ランダムな位置にランダムな数字を配置（すでに埋まっている場合は次）
         var seedRow: Int
@@ -113,7 +113,11 @@ class GridData() : NumbergameData() {
         }
     }
 
-    public fun resumeGame(newData: Array<Array<CellData>>){
+    /*
+        指定されたデータでセルを初期化する
+    */
+
+    fun resumeGame(newData: Array<Array<CellData>>){
         for ((rowIdx, colArray) in data.withIndex()) {
             for ((colIdx) in colArray.withIndex()) {
                 data[rowIdx][colIdx].num = newData[rowIdx][colIdx].num
@@ -125,8 +129,8 @@ class GridData() : NumbergameData() {
     /*
         指定セルに指定された場合の正解の数を返却する
     */
-
-    public fun searchAnswer(checkRowId: Int, checkColId: Int, checkNum: Int) : MutableList<Array<Array<Int>>>{
+    fun searchAnswer(checkRowId: Int, checkColId: Int, checkNum: Int) : MutableList<Array<Array<Int>>>{
+//        var retList: MutableList<Array<Array<Int>>> = mutableListOf()
         var retList: MutableList<Array<Array<Int>>> = mutableListOf()
         // いままでに設定されている値をコピー
         val tmp = Array(NUM_OF_ROW){Array(NUM_OF_COL){0}}
@@ -149,7 +153,7 @@ class GridData() : NumbergameData() {
     /*
     全ての要素を初期化
     */
-    public fun clearAll (withFixCell: Boolean) {
+    fun clearAll (withFixCell: Boolean) {
         for ((rowIdx, colArray) in data.withIndex()) {
             for ((colIdx) in colArray.withIndex()) {
                 // 全データクリアの場合もしくは初期列以外の場合

@@ -6,7 +6,7 @@ open class NumbergameData {
 //        const val IMPOSSIBLE_NUM: Int = -1
         const val NUM_OF_COL: Int = 9             // 全体で９行
         const val NUM_OF_ROW: Int = 9             // 全体で９列
-        const val NUM_OF_SQR: Int = 9             // 全体で９枠
+//        const val NUM_OF_SQR: Int = 9             // 全体で９枠
         const val SQR_SIZE: Int = 3               //  平方領域は３×３マス
         const val KIND_OF_DATA: Int = 9           //  マスに入る数値は１～９（０は未設定扱い）
         const val MAX_NUM_CNT: Int = 9            //　各数字は全体で９個まで
@@ -78,13 +78,21 @@ open class NumbergameData {
         val sqrStartCol: Int = (checkColIdx / SQR_SIZE) * SQR_SIZE      //平方の左上のセルの列番号
         val oneSqr = Array(SQR_SIZE * SQR_SIZE) { 0 }     //平方内のデータ配列
         // チェック対象 平方内の値を取得
-        var checkIdx: Int = 0                                           //重複チェック用配列のインデックス
+        for(rowIdx in 0 until SQR_SIZE){
+            for(colIdx in 0 until SQR_SIZE) {
+                oneSqr[rowIdx * SQR_SIZE + colIdx] = checkGrid[sqrStartRow + rowIdx][sqrStartCol + colIdx]
+            }
+        }
+
+/*      //w
         for (rowIdx in sqrStartRow until sqrStartRow + SQR_SIZE) {
             for (coIIdx in sqrStartCol until sqrStartCol + SQR_SIZE) {
                 oneSqr[checkIdx] = checkGrid[rowIdx][coIIdx]
                 checkIdx++
             }
         }
+
+ */
         // 重複チェック
         return dupCheck(oneSqr)
 
