@@ -110,19 +110,11 @@ class NumbergameViewModel(
                                             gridData = gridData))
     }
 
-/*
-    private suspend fun insertSavedGrid(createUser: String = "", gridData: String = "", gridDataIsInit: String = "") {
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ISO_DATE_TIME
-        val currentString = current.format(formatter)
-
-        savedRepo.insert(SavedGridTbl(
-                                    createDt = currentString,
-                                    createUser = createUser,
-                                    gridData = gridData,
-                                    gridDataIsInit =  gridDataIsInit, ))
-    }
-*/
+    /*
+        指定ユーザ・現在時刻でデータをROOMのsaveTbl にインサートする
+        saveTbl にインサート時の戻りで列のIDを取得し、９×９のセルで未設定以外のセルの情報を
+        savedCellTbl にインサートする
+    */
     private suspend fun insertSaved(createUser: String = "", data: Array<Array<CellData>> =
         Array(NumbergameData.NUM_OF_ROW) { Array(NumbergameData.NUM_OF_COL) { CellData(0, false) } })
     {
@@ -185,7 +177,7 @@ class NumbergameViewModel(
         //      ・番号（初期値で編集不可かも）を設定
         //      ・ボタンに表示する表示済みの数字毎の数を集計
         //      ・未設定のセルの数を集計（ゲーム終了判定用）
-        var blankCellCnt: Int = 0                   //未設定セルの数
+//        var blankCellCnt: Int = 0                   //未設定セルの数
         for(rowIdx in 0 until NumbergameData.NUM_OF_ROW){
             for(colIdx in 0 until NumbergameData.NUM_OF_COL){
                 //セルの設定
@@ -194,10 +186,12 @@ class NumbergameViewModel(
                 //数字ボタンの設定
                 tmpBtn[gridData.data[rowIdx][colIdx].num].cnt++         //ボタンに表示する、数字毎の数をインクリメント
                 // 選択中のセルの場合、
-                if(rowIdx == selectedRow && colIdx == selectedCol){
-                    //セルを選択中にする
-                    tmpData[rowIdx][colIdx].isSelected = true
-                }
+                tmpData[rowIdx][colIdx].isSelected =  (rowIdx == selectedRow && colIdx == selectedCol)
+
+//                if(rowIdx == selectedRow && colIdx == selectedCol){
+//                    //セルを選択中にする
+//                    tmpData[rowIdx][colIdx].isSelected = true
+//                }
                 // 選択中のセルと同じ数字の場合（空白以外）、UIで強調表示するためフラグを設定
                 tmpData[rowIdx][colIdx].isSameNum = false
                 if(selectedNum != NumbergameData.NUM_NOT_SET) {
@@ -205,33 +199,41 @@ class NumbergameViewModel(
                         tmpData[rowIdx][colIdx].isSameNum = true
                     }
                 }
-                //未設定セルの数をカウント
-                if(gridData.data[rowIdx][colIdx].num == NumbergameData.NUM_NOT_SET){
-                    //未設定セルの場合、未設定セルの数をカウントアップ
-                    blankCellCnt++
-                }
+//                //未設定セルの数をカウント
+//                if(gridData.data[rowIdx][colIdx].num == NumbergameData.NUM_NOT_SET){
+//                    //未設定セルの場合、未設定セルの数をカウントアップ
+//                    blankCellCnt++
             }
         }
         //未設定セルの数が０個の場合、ゲーム終了とする
-        var isGameOver = false
-        if(blankCellCnt == 0){
+
+        var isGameOver = true
+
+        gridData.data.forEach {
+            it.forEach {
+                isGameOver = isGameOver && (it.num != NumbergameData.NUM_NOT_SET)
+            }
+        }
+
+        if(isGameOver){
             // 空欄が０件の場合、ゲーム終了なので正解データのが追加できる場合は追加する
-            var gridDataString: String = ""
+            val gridStr = StringBuilder()
             for(rowIdx in 0 until NumbergameData.NUM_OF_ROW) {
+                val rowStr = StringBuilder()
                 for (colIdx in 0 until NumbergameData.NUM_OF_COL) {
                     //セルの設定
-                    gridDataString += gridData.data[rowIdx][colIdx].num.toString()
+                    rowStr.append(gridData.data[rowIdx][colIdx].num.toString())
                 }
+                gridStr.append(rowStr)
             }
             viewModelScope.launch(Dispatchers.IO) {
                 //すでに登録されているデータ数を検索(0 or 1 件)
-                val dataCnt = appContainer.satisfiedGridTblRepository.getCnt(gridDataString)
+                val dataCnt = appContainer.satisfiedGridTblRepository.getCnt(gridStr.toString())
                 if (0 == dataCnt) {
                     //０件の場合データ追加
-                    insertSatisfiedGrid(createUser = "User", gridData = gridDataString)
+                    insertSatisfiedGrid(createUser = "User", gridData = gridStr.toString())
                 }
             }
-            isGameOver = true
         }
         _uiState.value = NumbergameUiState(
                             currentData = tmpData,
@@ -242,6 +244,7 @@ class NumbergameViewModel(
                             errBtnNum = 0,
         )
     }
+
 
     /*
         画面初期化
