@@ -15,8 +15,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-//        this.getApplicationContext().deleteDatabase("satisfiedGrid_DB")
-//        this.getApplicationContext().deleteDatabase("savedGrid_DB")
+        this.getApplicationContext().deleteDatabase("satisfiedGrid_DB")
+        this.getApplicationContext().deleteDatabase("savedGrid_DB")
 
         setContent {
             NumbergameTheme {
