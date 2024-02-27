@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class SavedTblViewModel(private val _savedTblRepository: SavedTblRepository) : ViewModel()  {
+class SavedTblViewModel(private val savedTblRepository: SavedTblRepository) : ViewModel()  {
     val savedTblUiState: StateFlow<SavedTblListUiState> =
-        _savedTblRepository.getAllGrids().map { SavedTblListUiState(it) }
+            savedTblRepository.getAllGrids().map { SavedTblListUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
