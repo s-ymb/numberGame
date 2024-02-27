@@ -54,7 +54,7 @@ object AppViewModelProvider {
         // Initializer for SavedGridTblViewModel
         initializer {
             SavedTblViewModel(
-                numberGameApplication().container)
+                numberGameApplication().container.savedTblRepository)
         }
     }
 }
