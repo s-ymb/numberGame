@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class SavedTblViewModel(private val savedTblRepository: SavedTblRepository) : ViewModel()  {
-    val saveRepo : SavedTblRepository = savedTblRepository
+    private val saveRepo : SavedTblRepository = savedTblRepository
     val savedTblUiState: StateFlow<SavedTblListUiState> =
         saveRepo.getAllGrids().map { SavedTblListUiState(it) }
             .stateIn(
