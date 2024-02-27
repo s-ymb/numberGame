@@ -2,6 +2,7 @@ package com.s_ymb.numbergame.ui.satisfiedGrid
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,12 +10,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -32,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -100,7 +99,7 @@ fun SatisfiedGridDetailScreen(
             },
             modifier = Modifier
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
+//                .verticalScroll(rememberScrollState())
         )
     }
 }
@@ -117,7 +116,8 @@ private fun SatisfiedGridDetailsBody(
     ) {
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
         SatisfiedGridDetail(
-            satisfiedGrid = satisfiedGridDetailsUiState.satisfiedGridTbl.toSatisfiedGrid(), modifier = Modifier.fillMaxWidth()
+            satisfiedGrid = satisfiedGridDetailsUiState.satisfiedGridTbl.toSatisfiedGrid(),
+            //modifier = Modifier.fillMaxWidth()
         )
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
@@ -142,14 +142,15 @@ private fun SatisfiedGridDetailsBody(
 
 @Composable
 fun SatisfiedGridDetail(
-    satisfiedGrid: SatisfiedGrid, modifier: Modifier = Modifier
-) {
+    satisfiedGrid: SatisfiedGrid,
+//    modifier: Modifier = Modifier
+) /*{
     Card(
         modifier = modifier, colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
-    ) {
+    ) */  {
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -179,16 +180,16 @@ fun SatisfiedGridDetail(
             //グリッドを表示
             NumberGridRow(
                 data = satisfiedGrid.data,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(
-                        id = R.dimen
-                            .padding_medium
-                    )
-                )
+//                modifier = Modifier.padding(
+//                    horizontal = dimensionResource(
+//                        id = R.dimen
+//                            .padding_medium
+//                    )
+//                )
             )
         }
     }
-}
+// }
 
 @Composable
 private fun SatisfiedGridDetailsRow(
@@ -204,41 +205,62 @@ private fun SatisfiedGridDetailsRow(
 @Composable
 private fun NumberGridRow(
     data: Array<IntArray>,
-    modifier: Modifier = Modifier
+//    modifier: Modifier  = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.Top,
-//        modifier = modifier
-        //.background(color= Color.Yellow)
+        modifier = Modifier
     ) {
         Column(
-//            modifier = Modifier,
-//                .fillMaxWidth(),
+            modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
         ) {
-            for ((rowIdx: Int, rowData: IntArray) in data.withIndex()) {
-                Row(
-//                    modifier = Modifier.padding(0.dp)
-                ) {
+            for ((rowIdx,rowData: IntArray) in data.withIndex()) {
+                Row()
+                {
                     for ((colIdx: Int) in rowData.withIndex()) {
-                        var numStr: String = ""
-                        if (rowData[colIdx] != NumbergameData.NUM_NOT_SET) {
-                            numStr = rowData[colIdx].toString()
-                        }
+                        val numStr: String = if (rowData[colIdx] != NumbergameData.NUM_NOT_SET)
+                                            {
+                                                rowData[colIdx].toString()
+                                            }else{""}
+
+                        /*
+                                                var numStr: String = ""
+                                                if (rowData[colIdx] != NumbergameData.NUM_NOT_SET) {
+                                                    numStr = rowData[colIdx].toString()
+                                                }
+                        */
                         Text(
                             text = numStr,
                             textAlign = TextAlign.Center,
                             fontSize = 24.sp,
                             modifier = Modifier
-                                .width(38.dp)
+                                .width(32.dp)
                                 .padding(0.dp)
+                                .background(color = colorResource(R.color.cell_bg_color_init))
                                 .border(
-                                    border = BorderStroke(color = Color.Black, width = 1.dp,),
+                                    border = BorderStroke(
+                                                color = Color.Black,
+                                                width = 1.dp,
+                                            ),
                                     shape = RectangleShape,
                                 )
                         )
+                        if (colIdx % 3 == 2 && colIdx != 8) {
+                            //平方毎にスペースを開ける
+                            Spacer(
+                                modifier = Modifier
+                                    .size(8.dp)
+                            )
+                        }
                     }
+                }
+                if (rowIdx % 3 == 2) {
+                    //平方毎にスペースを開ける
+                    Spacer(
+                        modifier = Modifier
+                            .size(8.dp)
+                    )
                 }
             }
         }
@@ -247,7 +269,9 @@ private fun NumberGridRow(
 
 @Composable
 private fun DeleteConfirmationDialog(
-    onDeleteConfirm: () -> Unit, onDeleteCancel: () -> Unit, modifier: Modifier = Modifier
+    onDeleteConfirm: () -> Unit,
+    onDeleteCancel: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AlertDialog(onDismissRequest = { /* Do nothing */ },
         title = { Text(stringResource(R.string.attention)) },

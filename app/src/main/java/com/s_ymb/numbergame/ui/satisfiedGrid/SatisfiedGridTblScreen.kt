@@ -21,7 +21,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -52,14 +51,14 @@ object SatisfiedGridTblDestination : NavigationDestination {
 @Composable
 fun SatisfiedGridTblScreen(
     navigateBack: () -> Unit,
-    navigateToSatisfiedGridEntry: () -> Unit,
+//    navigateToSatisfiedGridEntry: () -> Unit,
     navigateToSatisfiedGridDetail: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SatisfiedGridTblViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val satisfiedGridTblUiState by viewModel.satisfiedGridTblUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val coroutineScope = rememberCoroutineScope()
+//    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -192,6 +191,7 @@ fun HomeBodyEmptyListPreview() {
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun SatisfieGridItemPreview() {
@@ -201,3 +201,4 @@ fun SatisfieGridItemPreview() {
         )
     }
 }
+*/

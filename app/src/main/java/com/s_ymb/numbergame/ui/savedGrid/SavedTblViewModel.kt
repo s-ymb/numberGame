@@ -11,10 +11,6 @@ import kotlinx.coroutines.flow.stateIn
 
 class SavedTblViewModel(private val appContainer: AppContainer) : ViewModel()  {
 
-    /**
-     * Holds home ui state. The list of items are retrieved from [ItemsRepository] and mapped to
-     * [HomeUiState]
-     */
     val savedTblUiState: StateFlow<SavedTblListUiState> =
         appContainer.savedTblRepository.getAllGrids().map { SavedTblListUiState(it) }
             .stateIn(

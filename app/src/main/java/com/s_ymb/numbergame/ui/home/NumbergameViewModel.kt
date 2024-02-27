@@ -7,6 +7,7 @@ import com.s_ymb.numbergame.data.CellData
 import com.s_ymb.numbergame.data.GridData
 import com.s_ymb.numbergame.data.NumbergameData
 import com.s_ymb.numbergame.data.NumbergameData.Companion.IMPOSSIBLE_IDX
+import com.s_ymb.numbergame.data.NumbergameData.Companion.IMPOSSIBLE_NUM
 import com.s_ymb.numbergame.data.SatisfiedGridData
 import com.s_ymb.numbergame.data.SatisfiedGridTbl
 import com.s_ymb.numbergame.data.SavedCellTbl
@@ -37,7 +38,7 @@ class NumbergameViewModel(
     private val satisfiedGridData = SatisfiedGridData()         //正解リスト
 
     // ↓ 保存一覧以外からの遷移の場合はNULL
-    private val id: Int ?= savedStateHandle[NumberGameScreenDestination.NumberGameScreenIdArg]
+    private val id: Int ?= savedStateHandle[NumbergameScreenDestination.NumbergameScreenIdArg]
 
 
     private var fixCellCnt = 30
@@ -167,10 +168,10 @@ class NumbergameViewModel(
         // ９×９の数字の配列をui state に設定する
         // 選択中のセルと同じ数字の表示を変える為に選択中のセルの数字を保存
         val selectedNum =
-        if(selectedRow != CellData.IMPOSSIBLE_NUM && selectedCol != CellData.IMPOSSIBLE_NUM){
+        if(selectedRow != IMPOSSIBLE_NUM && selectedCol != IMPOSSIBLE_NUM){
             gridData.data[selectedRow][selectedCol].num
         }else{
-            CellData.IMPOSSIBLE_NUM
+            IMPOSSIBLE_NUM
         }
 
         // セルに
@@ -210,7 +211,7 @@ class NumbergameViewModel(
         var isGameOver = true
 
         gridData.data.forEach {
-            it.forEach {
+            it.forEach{
                 isGameOver = isGameOver && (it.num != NumbergameData.NUM_NOT_SET)
             }
         }

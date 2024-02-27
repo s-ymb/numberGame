@@ -24,7 +24,6 @@ fun SatisfiedGridTbl.toSatisfiedGrid() :SatisfiedGrid {
         for (rowId in 0 until NumbergameData.NUM_OF_ROW) {
             for (colId in 0 until NumbergameData.NUM_OF_COL) {
                 val pos = rowId * NumbergameData.NUM_OF_COL + colId
-                val a = tmpDataStr.substring(pos, pos + 1)
                 tmpData[rowId][colId] = tmpDataStr.substring(pos, pos + 1).toInt()
             }
         }
@@ -32,7 +31,10 @@ fun SatisfiedGridTbl.toSatisfiedGrid() :SatisfiedGrid {
     return SatisfiedGrid(createDt = this.createDt, createUser = this.createUser, data = tmpData)
 }
 
-
+/*
+        SatisfiedGrid　→　StafisfiedGridTbl
+*/
+/* warning になるので消しておく
 fun SatisfiedGrid.toSatisfiedGridTbl() :SatisfiedGridTbl{
     var gridData = ""
     for (rowId in 0 until NumbergameData.NUM_OF_ROW) {
@@ -42,5 +44,5 @@ fun SatisfiedGrid.toSatisfiedGridTbl() :SatisfiedGridTbl{
     }
     return SatisfiedGridTbl(gridData = gridData, createDt= this.createDt, createUser = this.createUser)
 }
-
+*/
 

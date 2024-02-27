@@ -14,7 +14,7 @@
     <color name="cell_text_color_same_num">#FFB0083E</color>
 
     <color name="cell_bg_color_default">#FFFFFFFF</color>
-    <color name="cell_bg_color_init">#FFE0E0E0</color>
+    <color name="cell_bg_color_init">#FFE8E8E8</color>
 
 </resources>
 

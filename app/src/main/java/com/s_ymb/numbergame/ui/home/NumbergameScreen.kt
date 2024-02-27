@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,17 +46,17 @@ import com.s_ymb.numbergame.data.dupErr
 import com.s_ymb.numbergame.ui.navigation.NavigationDestination
 import com.s_ymb.numbergame.ui.theme.AppViewModelProvider
 
-object NumberGameScreenDestination : NavigationDestination {
-    override val route = "NumberGameScreen"
-    override val titleRes = R.string.app_name
-    const val NumberGameScreenIdArg = "itemId"
-    val routeWithArgs = "$route/{${NumberGameScreenDestination.NumberGameScreenIdArg}}"
+object NumbergameScreenDestination : NavigationDestination {
+    override val route = "NumbergameScreen"
+    override val titleRes = R.string.number_game_screen_title
+    const val NumbergameScreenIdArg = "itemId"
+    val routeWithArgs = "$route/{$NumbergameScreenIdArg}"
 }
 
 /**
  * Entry route for Home screen
  */
-@OptIn(ExperimentalMaterial3Api::class)
+//@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun GameScreen(
@@ -154,7 +153,8 @@ fun NumberGridLayout(
             verticalAlignment = Alignment.Top,
         ) {
             for ((colIdx: Int, cell: ScreenCellData) in rowData.withIndex()) {
-                var borderWidth: Int = 2
+                var borderWidth: Int
+                borderWidth = 2
                 var borderColor: Color = colorResource(R.color.cell_border_color_not_selected)
                 var textColor: Color= Color.Black
                 var fWeight: FontWeight = FontWeight.Light
@@ -178,7 +178,8 @@ fun NumberGridLayout(
                     //初期設定されたセルの場合は背景色をグレーに
                     bgColor = colorResource(R.color.cell_bg_color_init)
                 }
-                var numStr: String = ""
+                var numStr: String
+                numStr = ""
                 if (cell.num != NumbergameData.NUM_NOT_SET) {
                     numStr = cell.num.toString()
                 }
@@ -212,7 +213,6 @@ fun NumberGridLayout(
                     Spacer(
                         modifier = modifier
                             .size(8.dp)
-                        //.background(color=Color.Red)
                     )
                 }
             }
@@ -222,7 +222,6 @@ fun NumberGridLayout(
             Spacer(
                 modifier = modifier
                     .size(8.dp)
-                //.background(color=Color.Red)
             )
         }
     }

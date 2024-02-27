@@ -1,12 +1,9 @@
 package com.s_ymb.numbergame.data
-
+/*
+    ９×９の各セルの属性情報
+ */
 data class CellData (
-var num: Int = 0,
-var init: Boolean = false
-){
-companion object {
-    //定数定義
-//    const val NUM_NOT_SET: Int = 0
-    const val IMPOSSIBLE_NUM: Int = -1
-}
-}
+    var num: Int = 0,               // 番号
+    var init: Boolean = false       // 新規時に設定されたか
+)
+

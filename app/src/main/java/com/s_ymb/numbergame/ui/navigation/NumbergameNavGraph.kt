@@ -1,5 +1,6 @@
 package com.s_ymb.numbergame.ui.navigation
 
+// import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridEntryScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -9,11 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.s_ymb.numbergame.ui.home.GameScreen
-import com.s_ymb.numbergame.ui.home.NumberGameScreenDestination
+import com.s_ymb.numbergame.ui.home.NumbergameScreenDestination
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailDestination
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailScreen
-import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridEntryDestination
-import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridEntryScreen
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridTblDestination
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridTblScreen
 import com.s_ymb.numbergame.ui.savedGrid.SavedDetailDestination
@@ -34,7 +33,7 @@ fun NumbergameNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NumberGameScreenDestination.routeWithArgs,
+        startDestination = NumbergameScreenDestination.routeWithArgs,
         modifier = modifier
     ) {
         navigation(startDestination = SatisfiedGridTblDestination.route, route = "SatisfiedGridGroup")
@@ -42,18 +41,19 @@ fun NumbergameNavHost(
             composable(route = SatisfiedGridTblDestination.route) {
                 SatisfiedGridTblScreen(
                     navigateBack = { navController.navigateUp() },
-                    navigateToSatisfiedGridEntry = { navController.navigate(SatisfiedGridEntryDestination.route) },
+                //    navigateToSatisfiedGridEntry = { navController.navigate(SatisfiedGridEntryDestination.route) },
                     navigateToSatisfiedGridDetail = {
                         navController.navigate("${SatisfiedGridDetailDestination.route}/${it}")
                     }
                 )
             }
+            /*
             composable(route = SatisfiedGridEntryDestination.route) {
                 SatisfiedGridEntryScreen(
                     navigateBack = { navController.popBackStack() },
                 )
             }
-
+            */
             composable(
                 route = SatisfiedGridDetailDestination.routeWithArgs,
                 arguments = listOf(navArgument(SatisfiedGridDetailDestination.satisfiedGridIdArg) {
@@ -84,14 +84,17 @@ fun NumbergameNavHost(
             ) {
                 SavedGridDetailScreen(
                     navigateBack = { navController.navigateUp() },
-                    navigateToNumberGameScreen =
+                    navigateToNumbergameScreen =
                     //                   {navController.navigate("${NumberGameScreenDestination.route}/${it}"}
-                    {navController.navigate("${NumberGameScreenDestination.route}/${it}")}
+                    {
+                        navController.navigate("${NumbergameScreenDestination.route}/${it}")
+                    },
                 )
             }
         }
-        composable(route = NumberGameScreenDestination.routeWithArgs,
-            arguments = listOf(navArgument(NumberGameScreenDestination.NumberGameScreenIdArg) {
+        composable(
+            route = NumbergameScreenDestination.routeWithArgs,
+            arguments = listOf(navArgument(NumbergameScreenDestination.NumbergameScreenIdArg) {
                 type = NavType.IntType
             })
         ){

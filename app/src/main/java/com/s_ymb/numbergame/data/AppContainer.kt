@@ -9,12 +9,15 @@ interface AppContainer {
 }
 
 /**
- * [AppContainer] implementation that provides instance of [OfflineItemsRepository]
+ *  Room データベースのインスタンスを所有するクラス
+ *  ・正解情報
+ *  []satisfiedGridTblRepository]
+ *  ・保存概要情報（一時保存時にその時の概要情報を保存）
+ *  [savedCellTblRepository]
+ *  ・保存詳細情報（一時保存時にセル単位の詳細情報を保存）
+ *  [savedTblRepository]
  */
 class AppDataContainer(private val context: Context) : AppContainer {
-    /**
-     * Implementation for [ItemsRepository]
-     */
     override val satisfiedGridTblRepository: SatisfiedGridTblRepository by lazy {
         OfflineSatisfiedGridTblRepository(SatisfiedGridDataBase.getDatabase(context).satisfiedGridTblDao())
     }

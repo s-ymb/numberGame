@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -45,14 +46,8 @@ import com.s_ymb.numbergame.NumberGameTopAppBar
 import com.s_ymb.numbergame.R
 import com.s_ymb.numbergame.data.CellData
 import com.s_ymb.numbergame.data.NumbergameData
-import com.s_ymb.numbergame.data.SatisfiedGrid
 import com.s_ymb.numbergame.data.SavedCellTbl
-import com.s_ymb.numbergame.data.SavedGrid
-import com.s_ymb.numbergame.data.toSatisfiedGrid
-import com.s_ymb.numbergame.data.toSavedGrid
 import com.s_ymb.numbergame.ui.navigation.NavigationDestination
-import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailUiState
-import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailViewModel
 import com.s_ymb.numbergame.ui.theme.AppViewModelProvider
 import kotlinx.coroutines.launch
 
@@ -67,7 +62,7 @@ object SavedDetailDestination : NavigationDestination {
 @Composable
 fun SavedGridDetailScreen(
     navigateBack: () -> Unit,
-    navigateToNumberGameScreen: (Int) -> Unit,
+    navigateToNumbergameScreen: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SavedGridDetailViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -108,8 +103,7 @@ fun SavedGridDetailScreen(
                     navigateBack()
                 }
             },
-            onResume = {navigateToNumberGameScreen(savedTblUiState.value.savedTbl.id)
-            },
+            onResume = {navigateToNumbergameScreen(savedTblUiState.value.savedTbl.id)},
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
@@ -215,12 +209,12 @@ fun SavedGridDetail(
             //グリッドを表示
             NumberGridRow(
                 dataList = savedCellTblList,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(
-                        id = R.dimen
-                            .padding_medium
-                    )
-                )
+//                modifier = Modifier.padding(
+//                    horizontal = dimensionResource(
+//                        id = R.dimen
+//                            .padding_medium
+//                    )
+//                )
             )
         }
     }
@@ -240,7 +234,7 @@ private fun SavedGridDetailsRow(
 @Composable
 private fun NumberGridRow(
     dataList: List<SavedCellTbl>,
-    modifier: Modifier = Modifier,
+//    modifier: Modifier = Modifier,
 ) {
     // 空のアレイを作成し、引数のリストに含まれるデータで更新する
     val data : Array<Array<CellData>> =
@@ -263,13 +257,15 @@ private fun NumberGridRow(
 //            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
         ) {
             for ((rowIdx: Int, rowData: Array<CellData>) in data.withIndex()) {
-                Row(
+                Row ()
 //                    modifier = Modifier.padding(0.dp)
-                ) {
+                {
                     for ((colIdx: Int) in rowData.withIndex()) {
-                        var numStr: String = ""
-                        if (rowData[colIdx].num != NumbergameData.NUM_NOT_SET) {
-                            numStr = rowData[colIdx].num.toString()
+                        val numStr: String = if (rowData[colIdx].num != NumbergameData.NUM_NOT_SET)
+                        {
+                            rowData[colIdx].num.toString()
+                        }else{
+                            ""
                         }
                         var bgColor: Color = colorResource(R.color.cell_bg_color_default)
                         if (rowData[colIdx].init) {
@@ -281,17 +277,34 @@ private fun NumberGridRow(
                             textAlign = TextAlign.Center,
                             fontSize = 24.sp,
                             modifier = Modifier
-                                .width(38.dp)
+                                .width(32.dp)
                                 .padding(0.dp)
                                 .border(
-                                    border = BorderStroke(color = Color.Black, width = 1.dp,),
+                                    border = BorderStroke(
+                                                    color = Color.Black,
+                                                    width = 1.dp,
+                                                ),
                                     shape = RectangleShape,
                                 )
                                 .background(
                                     color = bgColor,
                                 )
                         )
+                        if (colIdx % 3 == 2 && colIdx != 8) {
+                            //平方毎にスペースを開ける
+                            Spacer(
+                                modifier = Modifier
+                                    .size(8.dp)
+                            )
+                        }
                     }
+                }
+                if (rowIdx % 3 == 2) {
+                    //平方毎にスペースを開ける
+                    Spacer(
+                        modifier = Modifier
+                            .size(8.dp)
+                    )
                 }
             }
         }

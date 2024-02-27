@@ -8,7 +8,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.s_ymb.numbergame.NumbergameApplication
 import com.s_ymb.numbergame.ui.home.NumbergameViewModel
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridDetailViewModel
-import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridEntryViewModel
 import com.s_ymb.numbergame.ui.satisfiedGrid.SatisfiedGridTblViewModel
 import com.s_ymb.numbergame.ui.savedGrid.SavedGridDetailViewModel
 import com.s_ymb.numbergame.ui.savedGrid.SavedTblViewModel
@@ -24,11 +23,11 @@ object AppViewModelProvider {
 
 
         // Initializer for SatisfiedGridEntryViewModel
-        initializer {
-            SatisfiedGridEntryViewModel(
-                numberGameApplication().container.satisfiedGridTblRepository
-            )
-        }
+ //       initializer {
+ //           SatisfiedGridEntryViewModel(
+ //               numberGameApplication().container.satisfiedGridTblRepository
+ //           )
+ //       }
 
         // Initializer for SatisfiedGridDetailsViewModel
         initializer {

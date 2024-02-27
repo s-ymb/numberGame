@@ -3,11 +3,14 @@ package com.s_ymb.numbergame.data
 import com.s_ymb.numbergame.data.dupErr.NO_DUP
 import kotlin.random.Random
 
+/*
+        ９×９のセルを表現するクラス（操作も含む）
+
+ */
+
 class GridData(
         val data: Array<Array<CellData>> = Array(NUM_OF_ROW) { Array(NUM_OF_COL) { CellData(0, false) } }
         ) : NumbergameData() {
-//    val data: Array<Array<CellData>> = _data
-
     /*
         データの指定位置に指定データが設定可能か判定して可能な場合、値を設定する
         同じ数字が範囲内に重複する場合、範囲に応じたエラーを返す。
@@ -25,6 +28,8 @@ class GridData(
                 tmp[rowIdx][colIdx] = cell.num
             }
         }
+        // コピーした配列がNumbergameのルールに沿っているかチェックする
+        // チェックロジックは継承元のNumbergameDataにて実装
         val dataCheckResult: dupErr = checkData(tmp, row, col, newNum)
         if (NO_DUP == dataCheckResult) {
             //チェックOKの場合、データに反映する。
@@ -66,34 +71,25 @@ class GridData(
                 }
             }
         }
-        //検証用
-        /* Log.d("TAG", "正解あり")        //検証用
-        for (rowIdx: Int in 0 until NUM_OF_ROW) {
-            var lineStr = ""
-            for (colIdx in 0 until NUM_OF_COL) {
-                lineStr += tmp[rowIdx][colIdx].toString()
-            }
-            Log.d("TAG", lineStr.toString())        //検証用
-        } */
-
-        // ここで数字配列の実態を作成
-        val retArr = Array(NUM_OF_ROW){Array(NUM_OF_COL){0}}
-        for ((rowIdx, colArray) in data.withIndex()) {
+        // 未設定のデータが無い状態なので全てのセルが１～９の数値で埋められた状態
+        // ここで正解の数字配列の実態を作成し正解配列に追加してリターン
+        val retArr = Array(NUM_OF_ROW){Array(NUM_OF_COL){NUM_NOT_SET}}
+        for ((rowIdx, colArray) in tmp.withIndex()) {
             for ((colIdx) in colArray.withIndex()) {
                 retArr[rowIdx][colIdx] = tmp[rowIdx][colIdx]
+                retArr[rowIdx][colIdx] = colArray[colIdx]
             }
         }
         retList.add(retArr)
-        return retList            // 未設定データがなかったので、回答の内の１件
+        return retList
     }
 
     /*
-        新規データ作成
+        新規ゲームデータの作成
         回答配列(satisfiedArray)より指定個数の数字(fixCellSelected)を問題データとして設定する
     */
     fun newGame(satisfiedArray: Array<IntArray>, fixCellSelected: Int) {
 
-        // ランダムな位置にランダムな数字を配置（すでに埋まっている場合は次）
         var seedRow: Int
         var seedCol: Int
         // データ全消去

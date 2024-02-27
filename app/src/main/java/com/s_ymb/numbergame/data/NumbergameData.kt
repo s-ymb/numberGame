@@ -3,7 +3,7 @@ package com.s_ymb.numbergame.data
 open class NumbergameData {
     companion object {
         const val NUM_NOT_SET: Int = 0
-//        const val IMPOSSIBLE_NUM: Int = -1
+        const val IMPOSSIBLE_NUM: Int = -1
         const val NUM_OF_COL: Int = 9             // 全体で９行
         const val NUM_OF_ROW: Int = 9             // 全体で９列
 //        const val NUM_OF_SQR: Int = 9             // 全体で９枠
