@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.s_ymb.numbergame"
+    namespace = "io.github.s_ymb.numbergame"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.s_ymb.numbergame"
+        applicationId = "io.github.s_ymb.numbergame"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
