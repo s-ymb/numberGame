@@ -24,7 +24,7 @@ class SavedTblViewModel(savedTblRepository: SavedTblRepository) : ViewModel()  {
 }
 
 /**
- * Ui State for HomeScreen
+ * Ui State for SatisfiedGridTblScreen
  */
 data class SavedTblListUiState(val savedTblList: List<SavedTbl> = listOf())
 
