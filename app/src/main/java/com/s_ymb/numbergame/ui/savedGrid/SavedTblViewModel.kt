@@ -29,3 +29,4 @@ class SavedTblViewModel(private val savedTblRepository: SavedTblRepository) : Vi
 data class SavedTblListUiState(val savedTblList: List<SavedTbl> = listOf())
 
 
+
