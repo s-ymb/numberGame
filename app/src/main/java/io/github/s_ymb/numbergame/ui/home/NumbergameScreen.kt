@@ -1,8 +1,9 @@
 package io.github.s_ymb.numbergame.ui.home
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.widget.Toast
+import android.view.animation.LinearInterpolator
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,10 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.s_ymb.numbergame.R
+import io.github.s_ymb.numbergame.data.EndAnimationDataInit
 import io.github.s_ymb.numbergame.data.NumbergameData
 import io.github.s_ymb.numbergame.data.ScreenBtnData
 import io.github.s_ymb.numbergame.data.ScreenCellData
-import io.github.s_ymb.numbergame.data.dupErr
 import io.github.s_ymb.numbergame.ui.navigation.NavigationDestination
 import io.github.s_ymb.numbergame.ui.theme.AppViewModelProvider
 
@@ -71,10 +73,21 @@ fun GameScreen(
 //        modifier = modifier
     ) {
         // グリッド表示
-        NumberGridLayout(
-            onCellClicked = { rowId, colId -> gameViewModel.onCellClicked(rowId, colId) },
-            currentData = gameUiState.currentData,
-        )
+        if (gameUiState.isGameOver) {
+            // ゲーム終了時はアニメーションを出す画面を呼び出す
+            GameOverNumberGridLayout(
+                onNewGameBtnClicked = {gameViewModel.newGame()},
+                currentData = gameUiState.currentData,
+            )
+        } else {
+            // 通常時は設定された数字を９×９のテキストボックスで表示する
+            NumberGridLayout(
+                onCellClicked = { rowId, colId -> gameViewModel.onCellClicked(rowId, colId) },
+                currentData = gameUiState.currentData,
+            )
+
+        }
+
         // 数字ボタン表示
         NumBtnLayout(
             onNumBtnClicked = { num: Int -> gameViewModel.onNumberBtnClicked(num) },
@@ -85,20 +98,36 @@ fun GameScreen(
                 .size(8.dp)
             //.background(color=Color.Red)
         )
-        //数字選択時に入力値エラーが発生した場合toastで表示
-        if (gameUiState.errBtnMsgID != dupErr.NO_DUP) {
-            val context = LocalContext.current
-            val msg = when (gameUiState.errBtnMsgID) {
-                dupErr.ROW_DUP -> context.getString(R.string.err_btn_row_dup)
-                dupErr.COL_DUP -> context.getString(R.string.err_btn_col_dup)
-                dupErr.SQ_DUP -> context.getString(R.string.err_btn_sq_dup)
-                else -> ""
-            }
-            val toast = Toast.makeText(context, msg, Toast.LENGTH_LONG)
-            //toast.setGravity(Gravity.TOP, 0, 0);
-            toast.show()
-        }
+        //TODO 表示方法要再検討  数字選択時に入力値エラーが発生した場合toastで表示
+//        if (gameUiState.errBtnMsgID != dupErr.NO_DUP) {
+//        if (gameUiState.errBtnMsgID == dupErr.ROW_DUP ||
+//            gameUiState.errBtnMsgID == dupErr.COL_DUP ||
+//            gameUiState.errBtnMsgID == dupErr.SQ_DUP
+//        ) {
+//            val context = LocalContext.current
+//            val msg = when (gameUiState.errBtnMsgID) {
+//                dupErr.ROW_DUP -> context.getString(R.string.err_btn_row_dup)
+//                dupErr.COL_DUP -> context.getString(R.string.err_btn_col_dup)
+//                dupErr.SQ_DUP -> context.getString(R.string.err_btn_sq_dup)
+//                else -> ""
+//            }
+//            val toast = Toast.makeText(context, msg, Toast.LENGTH_LONG)
+//            //toast.setGravity(Gravity.TOP, 0, 0);
+//            toast.show()
+//        }
 
+
+        // とりあえず検索結果を表示するレイアウトを入れる
+        if (gameUiState.haveSearchResult) {
+            SearchResultLayout(
+                searchResult = gameUiState.currentSearchResult,
+            )
+        }
+        // スライダーを表示
+        SliderLayout(
+            defaultPos = gameUiState.fixCellCnt.toFloat(),
+            onValueChangeFinished = { num: Int -> gameViewModel.setFixCellCnt(num) },
+        )
 
         // 機能ボタン表示
         FunBtnLayout(
@@ -106,18 +135,6 @@ fun GameScreen(
             onResetGameBtnClicked = { gameViewModel.resetGame() },
             onClearGameBtnClicked = { gameViewModel.clearGame() },
             onSearchGameBtnClicked = { gameViewModel.searchAnsCnt() },
-        )
-        // とりあえず検索結果を表示するレイアウトを入れる
-        if (gameUiState.haveSearchResult) {
-            SearchResultLayout(
-                searchResult = gameUiState.currentSearchResult,
-            )
-        }
-
-        // スライダーを表示
-        SliderLayout(
-            defaultPos = gameUiState.fixCellCnt.toFloat(),
-            onValueChangeFinished = { num: Int -> gameViewModel.setFixCellCnt(num) },
         )
 
         //追加機能ボタン表示
@@ -128,11 +145,14 @@ fun GameScreen(
         )
 
         //ゲーム終了確認ダイアログ表示
-        if (gameUiState.isGameOver) {
-            FinalDialog(
-                onNewGameBtnClicked = { gameViewModel.newGame() },
-            )
-        }
+        // TODO ゲーム終了表示のアニメーション終了後に出すようにする
+//        if (gameUiState.isGameOver) {
+//            FinalDialog(
+//                onNewGameBtnClicked = { gameViewModel.newGame() },
+//            )
+//        }
+
+        // 終了ボタン表示
         EndBtnLayout(
         )
 
@@ -142,7 +162,6 @@ fun GameScreen(
         ９×９の２次元グリッドを描画
  */
 @Composable
-
 fun NumberGridLayout(
     onCellClicked: (Int, Int) -> Unit,
     currentData: Array<Array<ScreenCellData>>,
@@ -226,6 +245,128 @@ fun NumberGridLayout(
         }
     }
 }
+
+/*
+        ゲーム終了時の９×９の２次元グリッドを描画
+        TODO 中身は殆ど通常時の内容なので統合を考える必要があるか要検討
+ */
+@Composable
+fun GameOverNumberGridLayout(
+    onNewGameBtnClicked: () -> Unit,
+    currentData: Array<Array<ScreenCellData>>,
+    modifier: Modifier = Modifier
+) {
+    // TODO 初期値の設定など animationNo等の設定をどうするか？
+    val animationNo = 0
+    val initValue = EndAnimationDataInit.animationData[animationNo].init
+    val targetValue = EndAnimationDataInit.animationData[animationNo].data.size - 1
+    val setDuration = EndAnimationDataInit.animationData[animationNo].duration
+    val stage = remember{ mutableIntStateOf(0) }
+    val animStart = remember{ mutableStateOf(false) }
+//    val animEnd = remember{ mutableStateOf(false) }
+
+    val animator = ValueAnimator.ofInt(initValue, targetValue).apply{
+        duration = setDuration
+        interpolator = LinearInterpolator()
+        addUpdateListener{
+            stage.intValue = it.animatedValue as Int
+        }
+    }
+    //アニメーションがスタートしていない場合開始する
+    if(!animStart.value) {
+        animator.start()
+        animStart.value = true
+    }
+    //アニメーションの最後の状態になったらダイアログを表示
+    if(stage.intValue == targetValue){
+        FinalDialog(
+            onNewGameBtnClicked,
+        )
+    }
+
+
+
+    for ((rowIdx: Int, rowData: Array<ScreenCellData>) in currentData.withIndex()) {
+        Row(
+            verticalAlignment = Alignment.Top,
+        ) {
+            for ((colIdx: Int, cell: ScreenCellData) in rowData.withIndex()) {
+                var borderWidth: Int
+                borderWidth = 2
+                var borderColor: Color = colorResource(R.color.cell_border_color_not_selected)
+                var textColor: Color= Color.Black
+                var fWeight: FontWeight = FontWeight.Light
+                if (cell.isSelected) {
+                    // 選択済みのセルは表示枠を変更
+                    borderWidth = 4
+                    borderColor = colorResource(R.color.cell_border_color_selected)
+                }
+
+                if(cell.isSameNum){
+                    // 選択済みのセルと同じ数字の場合、
+                    // 文字を太字に設定
+                    fWeight = FontWeight.ExtraBold
+                    // テキストの色を設定
+                    textColor = colorResource(R.color.cell_text_color_same_num)
+//                    textColor = Color.Red
+                }
+
+                var bgColor: Color = colorResource(R.color.cell_bg_color_default)
+                if (cell.init) {
+                    //初期設定されたセルの場合は背景色をグレーに
+                    bgColor = colorResource(R.color.cell_bg_color_init)
+                }
+                val numStr: String =
+                    if (cell.num != NumbergameData.NUM_NOT_SET) {
+                        cell.num.toString()
+                    }else{
+                        ""
+                    }
+
+                //TODO アニメーションのタイプの場合分けの記述
+                if(0L != EndAnimationDataInit.animationData[animationNo].data[stage.intValue][rowIdx][colIdx]){
+                    bgColor = Color(EndAnimationDataInit.animationData[animationNo].data[stage.intValue][rowIdx][colIdx])
+                }
+                Text(
+                    text = numStr,
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    fontSize = 24.sp,
+                    fontWeight = fWeight,
+                    modifier = modifier
+                        .width(38.dp)
+                        .padding(0.dp)
+                        .border(
+                            border = BorderStroke(
+                                width = borderWidth.dp,
+                                color = borderColor
+                            ),
+                            shape = RectangleShape,
+                        )
+                        .background(
+                            color = bgColor,
+                        )
+                    )
+                if (colIdx % 3 == 2 && colIdx != 8) {
+                    //平方毎にスペースを開ける
+                    Spacer(
+                        modifier = modifier
+                            .size(8.dp)
+                    )
+                }
+            }
+        }
+        if (rowIdx % 3 == 2) {
+            //平方毎にスペースを開ける
+            Spacer(
+                modifier = modifier
+                    .size(8.dp)
+            )
+        }
+    }
+
+}
+
 
 /*
         数字入力ボタンを表示
@@ -347,7 +488,9 @@ private fun SliderLayout(
     onValueChangeFinished: (Int) -> Unit,
 ){
     var sliderPosition by remember { mutableFloatStateOf(defaultPos) }
-    Column {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
             Slider(
                 value = sliderPosition,
                 valueRange = 30f..60f,
@@ -356,8 +499,12 @@ private fun SliderLayout(
                 //steps = 3,
 
             )
-            val sliderTxt: String = "新規作成時　設定：" + sliderPosition.toInt().toString() + "個"
-            Text(text = sliderTxt)
+        // TODO strings.xml に移動する
+        val sliderTxt: String = "新規時の空欄：" + sliderPosition.toInt().toString() + "個：上のスライドで増減"
+        Text(
+            text = sliderTxt,
+            fontSize = 12.sp,
+        )
     }
 
 }
@@ -371,6 +518,12 @@ private fun SliderLayout(
 private fun SearchResultLayout(
     searchResult: Array<Int>,
 ){
+    // TODO strings.xml に移動する
+    Text(
+        text = "選択中のセルの入力値毎の正解数は以下です。",
+        textAlign = TextAlign.Center,
+        fontSize = 16.sp,
+    )
     Row(
         verticalAlignment = Alignment.Top,
         //.background(color= Color.Yellow)
@@ -378,7 +531,8 @@ private fun SearchResultLayout(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = "設定値")
+            // TODO strings.xml に移動する
+            Text(text = "入力値")
             Text(text = "正解数")
         }
         for (colIdx in 1..9) {
@@ -435,6 +589,7 @@ private fun OptBtnLayout(
             checked = checked.value,
             onCheckedChange = { checked.value = it },
         )
+        // TODO strings.xml に移動する
         Text("機能表示")
     }
     if(checked.value){
@@ -445,16 +600,21 @@ private fun OptBtnLayout(
             Button(
                 onClick = { onGoSatisfiedGridTbl() }
             ) {
+                // TODO strings.xml に移動する
                 Text(text = "正解一覧")
             }
+
+            // TODO 問題保存（入力値を初期データとして保存する機能が必要？
             Button(
                 onClick = { onSavedBtnClicked() }
             ) {
+                // TODO strings.xml に移動する
                 Text(text = "一時保存")
             }
             Button(
                 onClick = { onGoSavedGridTbl() }
             ) {
+                // TODO strings.xml に移動する
                 Text(text = "保存一覧")
             }
         }
@@ -478,6 +638,7 @@ fun EndBtnLayout(
             Button(
                 onClick = { activity.finish() }
             ) {
+                // TODO strings.xml に移動する
                 Text(text = "終了")
             }
         }
@@ -506,11 +667,13 @@ private fun FinalDialog(
                     activity.finish()
                 }
             ) {
+                // TODO strings.xml に移動する
                 Text(text = stringResource(R.string.exit))
             }
         },
         confirmButton = {
             TextButton(onClick = onNewGameBtnClicked) {
+                // TODO strings.xml に移動する
                 Text(text = stringResource(R.string.play_again))
             }
         }

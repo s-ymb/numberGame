@@ -9,7 +9,7 @@ data class NumbergameUiState(
     val currentData: Array<Array<ScreenCellData>> = Array(NumbergameData.NUM_OF_ROW)
                         { Array(NumbergameData.NUM_OF_COL)
                             {
-                                ScreenCellData(NumbergameData.NUM_NOT_SET, init = false, isSelected = false, isSameNum =  false)
+                                ScreenCellData(num = NumbergameData.NUM_NOT_SET, init = false, isSelected = false, isSameNum =  false)
                             }
                         },
     val currentBtn: Array<ScreenBtnData> = Array(NumbergameData.KIND_OF_DATA + 1){ScreenBtnData(0)},

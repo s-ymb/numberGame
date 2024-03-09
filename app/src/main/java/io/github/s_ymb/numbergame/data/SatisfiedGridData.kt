@@ -53,10 +53,10 @@ class SatisfiedGridData : NumbergameData() {
         val satisfiedGrid = dataList[satisfiedIdx]
 
         // 入れ替えるパターンをランダムに選択
-        val rotateType = (RotateType.values()).random().ordinal
-        val rotateDirection = (RotateDirection.values()).random().ordinal
-        val rotateArea = (RotateArea.values()).random().ordinal
-        val rotatePattern = (RotatePattern.values()).random().ordinal
+        val rotateType = (RotateType.entries.toTypedArray()).random().ordinal
+        val rotateDirection = (RotateDirection.entries.toTypedArray()).random().ordinal
+        val rotateArea = (RotateArea.entries.toTypedArray()).random().ordinal
+        val rotatePattern = (RotatePattern.entries.toTypedArray()).random().ordinal
         val offset: Array<IntArray> = getOffset(
                                         type = rotateType,
                                         direction = rotateDirection,

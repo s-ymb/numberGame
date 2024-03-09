@@ -16,9 +16,10 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="Numergame"
-            android:theme="@style/Theme.Numbergame">
-            <intent-filter>
+            android:label="Numbergame"
+            android:theme="@style/SplashTheme">
+<!--            android:theme="@style/Theme.Numbergame">
+-->            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />

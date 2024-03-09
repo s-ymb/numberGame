@@ -40,7 +40,7 @@ class NumbergameViewModel(
     // ↓ 保存一覧以外からの遷移の場合はNULL
     private val id: Int ?= savedStateHandle[NumbergameScreenDestination.NumbergameScreenIdArg]
 
-
+    // TODO 固定セルの初期値と設定できる範囲の検討が必要
     private var fixCellCnt = 30
     private var selectedRow = IMPOSSIBLE_IDX                             //選択中セルの行番号
     private var selectedCol = IMPOSSIBLE_IDX                     //選択中セルの列番号
@@ -167,6 +167,7 @@ class NumbergameViewModel(
 
         // ９×９の数字の配列をui state に設定する
         // 選択中のセルと同じ数字の表示を変える為に選択中のセルの数字を保存
+        // TODO 選択中のセルに入力された値がエラーの場合の設定方法を要件等
         val selectedNum =
         if(selectedRow != IMPOSSIBLE_NUM && selectedCol != IMPOSSIBLE_NUM){
             gridData.data[selectedRow][selectedCol].num
@@ -217,7 +218,7 @@ class NumbergameViewModel(
         }
 
         if(isGameOver){
-            // 空欄が０件の場合、ゲーム終了なので正解データのが追加できる場合は追加する
+            // 空欄が０件の場合、ゲーム終了なので未登録の正解データの場合はデータベースに追加する
             val gridStr = StringBuilder()
             for(rowIdx in 0 until NumbergameData.NUM_OF_ROW) {
                 val rowStr = StringBuilder()
@@ -320,7 +321,8 @@ class NumbergameViewModel(
                         if (0 == dataCnt) {
                             //０件の場合データ追加
                             insertSatisfiedGrid(
-                                createUser = "Search",
+                                //TODO strings.xml の登録方法は要検討
+                                createUser = "検索で見つけた正解",
                                 gridData = gridStr.toString()
                             )
                         }
@@ -357,14 +359,21 @@ class NumbergameViewModel(
             if (dupErr.NO_DUP == ret) {
                 // 設定できた場合、新しいデータでui_state を再構築
                 setGridDataToUiState()
+            } else {
+                val currentUiState = _uiState
+                val newUiSatateValue =
+                    currentUiState.value.copy(errBtnNum = number, errBtnMsgID = ret)
+                _uiState.value = newUiSatateValue
+
+//            _uiState.update { currentUiState ->
+//                currentUiState.copy(
+//                    errBtnNum = number,
+//                    errBtnMsgID = ret,
+//                )
+//            }
+//            val newUiState = _uiState.value
             }
-            _uiState.update { currentState ->
-                currentState.copy(
-                    errBtnNum = number,
-                    errBtnMsgID = ret,
-                )
-            }
-        }
+       }
     }
 
     /*

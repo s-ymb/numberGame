@@ -8,15 +8,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import io.github.s_ymb.numbergame.ui.theme.NumbergameTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        this.installSplashScreen()
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        this.getApplicationContext().deleteDatabase("satisfiedGrid_DB")
-        this.getApplicationContext().deleteDatabase("savedGrid_DB")
+       //this.getApplicationContext().deleteDatabase("satisfiedGrid_DB")
+       //this.getApplicationContext().deleteDatabase("savedGrid_DB")
 
         setContent {
             NumbergameTheme {
