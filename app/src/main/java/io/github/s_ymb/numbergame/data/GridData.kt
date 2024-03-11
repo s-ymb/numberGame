@@ -88,7 +88,7 @@ class GridData(
         新規ゲームデータの作成
         回答配列(satisfiedArray)より指定個数の数字(fixCellSelected)を問題データとして設定する
     */
-    fun newGame(satisfiedArray: Array<IntArray>, fixCellSelected: Int) {
+    fun newGame(satisfiedArray: Array<IntArray>, blankCellSelected: Int) {
 
         var seedRow: Int
         var seedCol: Int
@@ -97,6 +97,7 @@ class GridData(
 
         // ランダムに指定個数データを設定
 
+        val fixCellSelected = NUM_OF_COL * NUM_OF_ROW - blankCellSelected
         var fixCelCnt = 0
         while (fixCelCnt <= fixCellSelected) {
             seedRow = Random.nextInt(NUM_OF_ROW)

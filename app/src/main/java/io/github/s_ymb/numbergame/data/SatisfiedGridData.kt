@@ -1,27 +1,10 @@
 package io.github.s_ymb.numbergame.data
 
-/**
- *     NumberGame の定義を満たす数列のクラス
- *
- */
-class SatisfiedGridData : NumbergameData() {
-
-    private val dataList: MutableList<SatisfiedGrid> = SatisfiedGriListInit.getInitialListData()
-
-    fun add(satisfied :SatisfiedGrid =SatisfiedGrid() ){
-        dataList.add(satisfied)
-    }
-
-
-/*
+class SatisfiedGridData(satisfied: SatisfiedGrid = SatisfiedGrid()) : NumbergameData(){
+    public val satisfiedGrid = satisfied
+    /*
     正解データを正解リストからランダムに選択し、セルの位置の再配置を指定する
 */
-/*    enum class RotateType(type: Int){
-        rowRotate(0),
-        colRotate(1),
-        sqrRotate(2),
-    }
- */
     /*
         データ入替の種類
      */
@@ -47,10 +30,11 @@ class SatisfiedGridData : NumbergameData() {
         END         // 行入替の場合、最下段のエリア、列入替の場合、右端のエリア
     }
 
-    fun getSatisfied() : Array<IntArray>  {
+    fun getRandom() : Array<IntArray>  {
         // 正解リストのリストより１つの正解を選択
-        val satisfiedIdx: Int=  (0 until dataList.size).random()
-        val satisfiedGrid = dataList[satisfiedIdx]
+        // NumbergemeViewModelに移動
+//        val satisfiedIdx: Int=  (0 until dataList.size).random()
+//        val satisfiedGrid = dataList[satisfiedIdx]
 
         // 入れ替えるパターンをランダムに選択
         val rotateType = (RotateType.entries.toTypedArray()).random().ordinal
@@ -58,11 +42,11 @@ class SatisfiedGridData : NumbergameData() {
         val rotateArea = (RotateArea.entries.toTypedArray()).random().ordinal
         val rotatePattern = (RotatePattern.entries.toTypedArray()).random().ordinal
         val offset: Array<IntArray> = getOffset(
-                                        type = rotateType,
-                                        direction = rotateDirection,
-                                        pattern = rotatePattern,
-                                        area = rotateArea
-                                    )
+            type = rotateType,
+            direction = rotateDirection,
+            pattern = rotatePattern,
+            area = rotateArea
+        )
 
         // １～９のランダムな順列を生成
         val seedArray = (1..KIND_OF_DATA).shuffled()
@@ -313,8 +297,4 @@ class SatisfiedGridData : NumbergameData() {
         return retMask
     }
 
-
-
 }
-
-

@@ -13,12 +13,15 @@ data class NumbergameUiState(
                             }
                         },
     val currentBtn: Array<ScreenBtnData> = Array(NumbergameData.KIND_OF_DATA + 1){ScreenBtnData(0)},
+    val currentDataOrgName: String = "",            // データの元（シャッフル前の名前）
+    val currentDataOrgCreateDt: String = "",        // データの元（シャッフル前の作成日）
     val haveSearchResult: Boolean = false,
     val currentSearchResult: Array<Int> = Array(NumbergameData.KIND_OF_DATA + 1) { 0 },
     val isGameOver: Boolean = false,
+    val sameSatisfiedCnt: Int = -1,                 // 登録済みの正解件数（-1：未検索）
     val errBtnMsgID:dupErr = dupErr.NO_DUP,
     val errBtnNum: Int = 0,
-    val fixCellCnt: Int = 0,
+    val blankCellCnt: Int = 0,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

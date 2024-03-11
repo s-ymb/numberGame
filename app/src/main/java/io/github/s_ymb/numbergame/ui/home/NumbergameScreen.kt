@@ -56,7 +56,7 @@ object NumbergameScreenDestination : NavigationDestination {
 }
 
 /**
- * Entry route for Home screen
+ * 　数独のメイン画面
  */
 //@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -64,26 +64,32 @@ object NumbergameScreenDestination : NavigationDestination {
 fun GameScreen(
     navigateToSatisfiedGridTbl: () -> Unit,
     navigateToSavedGridTbl: () -> Unit,
-//    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
     gameViewModel: NumbergameViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val gameUiState by gameViewModel.uiState.collectAsState()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-//        modifier = modifier
+        modifier = modifier,
     ) {
         // グリッド表示
-        if (gameUiState.isGameOver) {
-            // ゲーム終了時はアニメーションを出す画面を呼び出す
-            GameOverNumberGridLayout(
-                onNewGameBtnClicked = {gameViewModel.newGame()},
-                currentData = gameUiState.currentData,
-            )
+        if (gameUiState.isGameOver){
+                // ゲーム終了時はアニメーションを出す画面を呼び出す
+                GameOverNumberGridLayout(
+                    uiState = gameUiState,
+                    onNewGameBtnClicked = { gameViewModel.newGame() },
+//                    currentData = gameUiState.currentData,
+//                    isNewSatisfied = gameUiState.isNewSatisfied,
+                    modifier = modifier,
+                )
         } else {
             // 通常時は設定された数字を９×９のテキストボックスで表示する
             NumberGridLayout(
                 onCellClicked = { rowId, colId -> gameViewModel.onCellClicked(rowId, colId) },
                 currentData = gameUiState.currentData,
+                currentDataOrgName = gameUiState.currentDataOrgName,
+                currentDataOrgCreateDt = gameUiState.currentDataOrgCreateDt,
+                modifier = modifier,
             )
 
         }
@@ -92,6 +98,7 @@ fun GameScreen(
         NumBtnLayout(
             onNumBtnClicked = { num: Int -> gameViewModel.onNumberBtnClicked(num) },
             currentBtn = gameUiState.currentBtn,
+            modifier = modifier,
         )
         Spacer(
             modifier = Modifier
@@ -125,8 +132,9 @@ fun GameScreen(
         }
         // スライダーを表示
         SliderLayout(
-            defaultPos = gameUiState.fixCellCnt.toFloat(),
+            defaultPos = gameUiState.blankCellCnt.toFloat(),
             onValueChangeFinished = { num: Int -> gameViewModel.setFixCellCnt(num) },
+            modifier = modifier,
         )
 
         // 機能ボタン表示
@@ -135,6 +143,7 @@ fun GameScreen(
             onResetGameBtnClicked = { gameViewModel.resetGame() },
             onClearGameBtnClicked = { gameViewModel.clearGame() },
             onSearchGameBtnClicked = { gameViewModel.searchAnsCnt() },
+            modifier = modifier,
         )
 
         //追加機能ボタン表示
@@ -142,6 +151,7 @@ fun GameScreen(
             onGoSatisfiedGridTbl = { navigateToSatisfiedGridTbl() },
             onGoSavedGridTbl = {navigateToSavedGridTbl()},
             onSavedBtnClicked = {gameViewModel.onSaveBtnClicked() },
+            modifier = modifier,
         )
 
         //ゲーム終了確認ダイアログ表示
@@ -165,8 +175,17 @@ fun GameScreen(
 fun NumberGridLayout(
     onCellClicked: (Int, Int) -> Unit,
     currentData: Array<Array<ScreenCellData>>,
+    currentDataOrgName: String,
+    currentDataOrgCreateDt: String,
     modifier: Modifier = Modifier
 ) {
+    if(currentDataOrgName != "" ) {
+        Text(
+            text = "元データ：$currentDataOrgName",
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp,
+        )
+    }
     for ((rowIdx: Int, rowData: Array<ScreenCellData>) in currentData.withIndex()) {
         Row(
             verticalAlignment = Alignment.Top,
@@ -231,7 +250,7 @@ fun NumberGridLayout(
                     //平方毎にスペースを開ける
                     Spacer(
                         modifier = modifier
-                            .size(8.dp)
+                            .size(4.dp)
                     )
                 }
             }
@@ -240,7 +259,7 @@ fun NumberGridLayout(
             //平方毎にスペースを開ける
             Spacer(
                 modifier = modifier
-                    .size(8.dp)
+                    .size(4.dp)
             )
         }
     }
@@ -253,18 +272,27 @@ fun NumberGridLayout(
 @Composable
 fun GameOverNumberGridLayout(
     onNewGameBtnClicked: () -> Unit,
-    currentData: Array<Array<ScreenCellData>>,
+    uiState: NumbergameUiState,
+//    currentData: Array<Array<ScreenCellData>>,
+//    isNewSatisfied: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val stage = remember{ mutableIntStateOf(0) }
+    val animStart = remember{ mutableStateOf(false) }
+
     // TODO 初期値の設定など animationNo等の設定をどうするか？
-    val animationNo = 0
+    // アニメーションの種類の選択方法も
+    var animationNo =
+        if(1 == uiState.sameSatisfiedCnt){
+            1               //不発のアニメーション
+        }else{
+            0               //爆発のアニメーション
+
+        }
+
     val initValue = EndAnimationDataInit.animationData[animationNo].init
     val targetValue = EndAnimationDataInit.animationData[animationNo].data.size - 1
     val setDuration = EndAnimationDataInit.animationData[animationNo].duration
-    val stage = remember{ mutableIntStateOf(0) }
-    val animStart = remember{ mutableStateOf(false) }
-//    val animEnd = remember{ mutableStateOf(false) }
-
     val animator = ValueAnimator.ofInt(initValue, targetValue).apply{
         duration = setDuration
         interpolator = LinearInterpolator()
@@ -272,8 +300,9 @@ fun GameOverNumberGridLayout(
             stage.intValue = it.animatedValue as Int
         }
     }
-    //アニメーションがスタートしていない場合開始する
-    if(!animStart.value) {
+
+    //正解の件数判定が終了していてアニメーションがスタートしていない場合開始する
+    if(!animStart.value && uiState.sameSatisfiedCnt != -1) {
         animator.start()
         animStart.value = true
     }
@@ -286,7 +315,7 @@ fun GameOverNumberGridLayout(
 
 
 
-    for ((rowIdx: Int, rowData: Array<ScreenCellData>) in currentData.withIndex()) {
+    for ((rowIdx: Int, rowData: Array<ScreenCellData>) in uiState.currentData.withIndex()) {
         Row(
             verticalAlignment = Alignment.Top,
         ) {
@@ -351,7 +380,7 @@ fun GameOverNumberGridLayout(
                     //平方毎にスペースを開ける
                     Spacer(
                         modifier = modifier
-                            .size(8.dp)
+                            .size(4.dp)
                     )
                 }
             }
@@ -360,7 +389,7 @@ fun GameOverNumberGridLayout(
             //平方毎にスペースを開ける
             Spacer(
                 modifier = modifier
-                    .size(8.dp)
+                    .size(4.dp)
             )
         }
     }
@@ -375,9 +404,11 @@ fun GameOverNumberGridLayout(
 fun NumBtnLayout(
     onNumBtnClicked: (Int) -> Unit,
     currentBtn: Array<ScreenBtnData>,
+    modifier: Modifier = Modifier,
 ) {
     Row(
         verticalAlignment = Alignment.Bottom,
+        modifier = modifier,
     ) {
         //ボタンの編集可否を設定
         for (btnNum in 1..5) {
@@ -405,6 +436,7 @@ fun NumBtnLayout(
     }
     Row(
         verticalAlignment = Alignment.Bottom,
+        modifier = modifier,
         //.background(color= Color.Yellow)
     ) {
         // ６～９のボタン　と　削除ボタン
@@ -444,9 +476,11 @@ fun FunBtnLayout(
     onResetGameBtnClicked: () -> Unit,
     onClearGameBtnClicked: () -> Unit,
     onSearchGameBtnClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
     ) {
         Row(
             verticalAlignment = Alignment.Top,
@@ -486,10 +520,12 @@ fun FunBtnLayout(
 private fun SliderLayout(
     defaultPos: Float,
     onValueChangeFinished: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ){
     var sliderPosition by remember { mutableFloatStateOf(defaultPos) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
     ) {
             Slider(
                 value = sliderPosition,
@@ -517,6 +553,7 @@ private fun SliderLayout(
 @Composable
 private fun SearchResultLayout(
     searchResult: Array<Int>,
+    modifier: Modifier = Modifier,
 ){
     // TODO strings.xml に移動する
     Text(
@@ -526,6 +563,7 @@ private fun SearchResultLayout(
     )
     Row(
         verticalAlignment = Alignment.Top,
+        modifier = modifier,
         //.background(color= Color.Yellow)
     ) {
         Column(
@@ -538,6 +576,7 @@ private fun SearchResultLayout(
         for (colIdx in 1..9) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier,
             ) {
                 Text(
                     text = colIdx.toString(),
@@ -578,10 +617,12 @@ private fun OptBtnLayout(
     onGoSatisfiedGridTbl: () -> Unit,
     onGoSavedGridTbl: () -> Unit,
     onSavedBtnClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ){
     val checked = remember { mutableStateOf(false) }
     Row(
         verticalAlignment = Alignment.Top,
+        modifier = modifier,
     ) {
         Checkbox(
             modifier = Modifier
@@ -595,6 +636,7 @@ private fun OptBtnLayout(
     if(checked.value){
         Row(
             verticalAlignment = Alignment.Top,
+            modifier = modifier,
         ) {
             //戦歴ボタン
             Button(
@@ -626,12 +668,15 @@ private fun OptBtnLayout(
  */
 @Composable
 fun EndBtnLayout(
+    modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier,
     ) {
         Row(
             verticalAlignment = Alignment.Top,
+            modifier = modifier,
         ) {
             //終了ボタン
             val activity = (LocalContext.current as Activity)
@@ -652,9 +697,11 @@ fun EndBtnLayout(
 @Composable
 private fun FinalDialog(
     onNewGameBtnClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val activity = (LocalContext.current as Activity)
     AlertDialog(
+        modifier = modifier,
         onDismissRequest = {
             // Dismiss the dialog when the user clicks outside the dialog or on the back
             // button. If you want to disable that functionality, simply use an empty

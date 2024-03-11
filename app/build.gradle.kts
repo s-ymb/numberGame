@@ -12,8 +12,8 @@ android {
         applicationId = "io.github.s_ymb.numbergame"
         minSdk = 30
         targetSdk = 33
-        versionCode = 10
-        versionName = "0.1.0"
+        versionCode = 11
+        versionName = "0.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
