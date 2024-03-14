@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -88,7 +87,7 @@ fun GameScreen(
                 onCellClicked = { rowId, colId -> gameViewModel.onCellClicked(rowId, colId) },
                 currentData = gameUiState.currentData,
                 currentDataOrgName = gameUiState.currentDataOrgName,
-                currentDataOrgCreateDt = gameUiState.currentDataOrgCreateDt,
+//                currentDataOrgCreateDt = gameUiState.currentDataOrgCreateDt,
                 modifier = modifier,
             )
 
@@ -147,23 +146,16 @@ fun GameScreen(
         )
 
         //追加機能ボタン表示
-        OptBtnLayout(
-            onGoSatisfiedGridTbl = { navigateToSatisfiedGridTbl() },
+        SaveBtnLayout(
+//            onGoSatisfiedGridTbl = { navigateToSatisfiedGridTbl() },
             onGoSavedGridTbl = {navigateToSavedGridTbl()},
-            onSavedBtnClicked = {gameViewModel.onSaveBtnClicked() },
+            onSavedBtnClicked = {asChallenge:Boolean -> gameViewModel.onSaveBtnClicked(asChallenge) },
             modifier = modifier,
         )
 
-        //ゲーム終了確認ダイアログ表示
-        // TODO ゲーム終了表示のアニメーション終了後に出すようにする
-//        if (gameUiState.isGameOver) {
-//            FinalDialog(
-//                onNewGameBtnClicked = { gameViewModel.newGame() },
-//            )
-//        }
-
-        // 終了ボタン表示
+        // 正解一覧ボタンと終了ボタン表示
         EndBtnLayout(
+            onGoSatisfiedGridTbl = { navigateToSatisfiedGridTbl() },
         )
 
     }
@@ -176,12 +168,12 @@ fun NumberGridLayout(
     onCellClicked: (Int, Int) -> Unit,
     currentData: Array<Array<ScreenCellData>>,
     currentDataOrgName: String,
-    currentDataOrgCreateDt: String,
+//    currentDataOrgCreateDt: String,
     modifier: Modifier = Modifier
 ) {
     if(currentDataOrgName != "" ) {
         Text(
-            text = "元データ：$currentDataOrgName",
+            text = stringResource(R.string.number_game_org_satisfied_title) + currentDataOrgName,
             textAlign = TextAlign.Center,
             fontSize = 12.sp,
         )
@@ -280,14 +272,15 @@ fun GameOverNumberGridLayout(
     val stage = remember{ mutableIntStateOf(0) }
     val animStart = remember{ mutableStateOf(false) }
 
-    // TODO 初期値の設定など animationNo等の設定をどうするか？
     // アニメーションの種類の選択方法も
-    var animationNo =
+    val animationNo =
         if(1 == uiState.sameSatisfiedCnt){
-            1               //不発のアニメーション
+            1               //不発のアニメーション（すでに登録済みの正解パターンだったので不発の演出）
         }else{
-            0               //爆発のアニメーション
+            // 空欄が０件の場合、ゲーム終了なので未登録の正解データの場合はデータベースに追加する
+            // TODO 定数の扱い　dataCnt の関連事項
 
+            0               //爆発のアニメーション sameSatisfiedCnt = -1 件数を検索中の場合もとりあえず０で流す。1でも同じ結果だが…
         }
 
     val initValue = EndAnimationDataInit.animationData[animationNo].init
@@ -301,6 +294,8 @@ fun GameOverNumberGridLayout(
         }
     }
 
+    // 空欄が０件の場合、ゲーム終了なので未登録の正解データの場合はデータベースに追加する
+    // TODO 定数の扱い　dataCnt の関連事項
     //正解の件数判定が終了していてアニメーションがスタートしていない場合開始する
     if(!animStart.value && uiState.sameSatisfiedCnt != -1) {
         animator.start()
@@ -462,7 +457,7 @@ fun NumBtnLayout(
         Button(
             onClick = { onNumBtnClicked(NumbergameData.NUM_NOT_SET) },
         ) {
-            Text(text = "削除")
+            Text(text = stringResource(R.string.btn_num_delete))
         }
     }
 }
@@ -489,25 +484,25 @@ fun FunBtnLayout(
             Button(
                 onClick = { onNewGameBtnClicked() }
             ) {
-                Text(text = "新規")
+                Text(text = stringResource(R.string.btn_new))
             }
             //リセットボタン
             Button(
                 onClick = { onResetGameBtnClicked() }
             ) {
-                Text(text = "初期化")
+                Text(text = stringResource(R.string.btn_init_data))
             }
             //クリアボタン
             Button(
                 onClick = { onClearGameBtnClicked() }
             ) {
-                Text(text = "全消去")
+                Text(text = stringResource(R.string.btn_clear_data))
             }
             //検索ボタン
             Button(
                 onClick = { onSearchGameBtnClicked() }
             ) {
-                Text(text = "検索")
+                Text(text = stringResource(R.string.btn_search))
             }
         }
     }
@@ -535,8 +530,7 @@ private fun SliderLayout(
                 //steps = 3,
 
             )
-        // TODO strings.xml に移動する
-        val sliderTxt: String = "新規時の空欄：" + sliderPosition.toInt().toString() + "個：上のスライドで増減"
+        val sliderTxt: String = stringResource(R.string.slider_title1) + sliderPosition.toInt().toString() + stringResource(R.string.slider_title2)
         Text(
             text = sliderTxt,
             fontSize = 12.sp,
@@ -557,7 +551,7 @@ private fun SearchResultLayout(
 ){
     // TODO strings.xml に移動する
     Text(
-        text = "選択中のセルの入力値毎の正解数は以下です。",
+        text = stringResource(R.string.savedGrid_tbl_title),
         textAlign = TextAlign.Center,
         fontSize = 16.sp,
     )
@@ -569,9 +563,8 @@ private fun SearchResultLayout(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // TODO strings.xml に移動する
-            Text(text = "入力値")
-            Text(text = "正解数")
+            Text(text = stringResource(R.string.search_result_num))
+            Text(text = stringResource(R.string.search_result_cnt))
         }
         for (colIdx in 1..9) {
             Column(
@@ -613,54 +606,52 @@ private fun SearchResultLayout(
 }
 
 @Composable
-private fun OptBtnLayout(
-    onGoSatisfiedGridTbl: () -> Unit,
+private fun SaveBtnLayout(
+//    正解一覧ボタンは終了ボタンの横に移動
+//    onGoSatisfiedGridTbl: () -> Unit,
     onGoSavedGridTbl: () -> Unit,
-    onSavedBtnClicked: () -> Unit,
+    onSavedBtnClicked: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ){
-    val checked = remember { mutableStateOf(false) }
-    Row(
-        verticalAlignment = Alignment.Top,
-        modifier = modifier,
-    ) {
-        Checkbox(
-            modifier = Modifier
-                .size(24.dp),
-            checked = checked.value,
-            onCheckedChange = { checked.value = it },
-        )
-        // TODO strings.xml に移動する
-        Text("機能表示")
-    }
-    if(checked.value){
+    //チェックボタン廃止
+//    val checked = remember { mutableStateOf(false) }
+//    Row(
+//        verticalAlignment = Alignment.Top,
+//        modifier = modifier,
+//    ) {
+//        Checkbox(
+//            modifier = Modifier
+//                .size(24.dp),
+//            checked = checked.value,
+//            onCheckedChange = { checked.value = it },
+//        )
+//        Text(stringResource(R.string.func_check_title))
+//    }
+//    if(checked.value){
         Row(
             verticalAlignment = Alignment.Top,
             modifier = modifier,
         ) {
             //戦歴ボタン
             Button(
-                onClick = { onGoSatisfiedGridTbl() }
-            ) {
-                // TODO strings.xml に移動する
-                Text(text = "正解一覧")
-            }
-
-            // TODO 問題保存（入力値を初期データとして保存する機能が必要？
-            Button(
-                onClick = { onSavedBtnClicked() }
-            ) {
-                // TODO strings.xml に移動する
-                Text(text = "一時保存")
-            }
-            Button(
                 onClick = { onGoSavedGridTbl() }
             ) {
-                // TODO strings.xml に移動する
-                Text(text = "保存一覧")
+                Text(text = stringResource(R.string.btn_save_list))
+            }
+            // 現状を一時保存する
+            Button(
+                onClick = { onSavedBtnClicked(false) }
+            ) {
+                Text(text = stringResource(R.string.btn_save))
+            }
+            // 現状を問題データとして保存
+            Button(
+                onClick = { onSavedBtnClicked(true) }
+            ) {
+                Text(text = stringResource(R.string.btn_save_challenge))
             }
         }
-    }
+//    }
 }
 
 /*
@@ -668,6 +659,7 @@ private fun OptBtnLayout(
  */
 @Composable
 fun EndBtnLayout(
+    onGoSatisfiedGridTbl: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -678,13 +670,17 @@ fun EndBtnLayout(
             verticalAlignment = Alignment.Top,
             modifier = modifier,
         ) {
+            Button(
+                onClick = { onGoSatisfiedGridTbl() }
+            ) {
+                Text(text = stringResource(R.string.btn_satisfied_list))
+            }
             //終了ボタン
             val activity = (LocalContext.current as Activity)
             Button(
                 onClick = { activity.finish() }
             ) {
-                // TODO strings.xml に移動する
-                Text(text = "終了")
+                Text(text = stringResource(R.string.btn_exit))
             }
         }
     }
@@ -715,13 +711,13 @@ private fun FinalDialog(
                 }
             ) {
                 // TODO strings.xml に移動する
-                Text(text = stringResource(R.string.exit))
+                Text(text = stringResource(R.string.btn_exit))
             }
         },
         confirmButton = {
             TextButton(onClick = onNewGameBtnClicked) {
                 // TODO strings.xml に移動する
-                Text(text = stringResource(R.string.play_again))
+                Text(text = stringResource(R.string.btn_new))
             }
         }
     )

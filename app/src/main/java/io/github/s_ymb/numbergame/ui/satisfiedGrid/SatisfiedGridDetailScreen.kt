@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -99,7 +101,7 @@ fun SatisfiedGridDetailScreen(
             },
             modifier = Modifier
                 .padding(innerPadding)
-//                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState())
         )
     }
 }
@@ -158,7 +160,7 @@ fun SatisfiedGridDetail(
 //            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
         ) {
             SatisfiedGridDetailsRow(
-                labelResID = R.string.satisfiedGrid_create_user_name,
+                labelResID = R.string.create_user_name,
                 itemDetail = satisfiedGrid.createUser,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(
@@ -168,7 +170,7 @@ fun SatisfiedGridDetail(
                 )
             )
             SatisfiedGridDetailsRow(
-                labelResID = R.string.satisfiedGrid_create_dt,
+                labelResID = R.string.create_dt,
                 itemDetail = satisfiedGrid.createDt,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(

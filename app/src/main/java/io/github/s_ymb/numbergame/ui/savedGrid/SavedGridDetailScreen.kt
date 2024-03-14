@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -174,49 +172,49 @@ fun SavedGridDetail(
     savedCellTblList: List<SavedCellTbl>,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier, colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+//    Card(
+//        modifier = modifier, colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.primaryContainer,
+//            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+//        )
+//    )
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
 //            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
-        ) {
-            SavedGridDetailsRow(
-                labelResID = R.string.satisfiedGrid_create_user_name,
-                itemDetail = savedTblUiState.savedTbl.createUser,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(
-                        id = R.dimen
-                            .padding_medium
-                    )
+    ) {
+        SavedGridDetailsRow(
+            labelResID = R.string.create_user_name,
+            itemDetail = savedTblUiState.savedTbl.createUser,
+            modifier = Modifier.padding(
+                horizontal = dimensionResource(
+                    id = R.dimen
+                        .padding_medium
                 )
             )
-            SavedGridDetailsRow(
-                labelResID = R.string.satisfiedGrid_create_dt,
-                itemDetail = savedTblUiState.savedTbl.createDt,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(
-                        id = R.dimen
-                            .padding_medium
-                    )
+        )
+        SavedGridDetailsRow(
+            labelResID = R.string.create_dt,
+            itemDetail = savedTblUiState.savedTbl.createDt,
+            modifier = Modifier.padding(
+                horizontal = dimensionResource(
+                    id = R.dimen
+                        .padding_medium
                 )
             )
-            //グリッドを表示
-            NumberGridRow(
-                dataList = savedCellTblList,
+        )
+        //グリッドを表示
+        NumberGridRow(
+            dataList = savedCellTblList,
 //                modifier = Modifier.padding(
 //                    horizontal = dimensionResource(
 //                        id = R.dimen
 //                            .padding_medium
 //                    )
 //                )
-            )
-        }
+        )
     }
 }
 

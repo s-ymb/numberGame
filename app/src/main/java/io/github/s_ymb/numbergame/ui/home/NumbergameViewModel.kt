@@ -118,7 +118,7 @@ class NumbergameViewModel(
         saveTbl にインサート時の戻りで列のIDを取得し、９×９のセルで未設定以外のセルの情報を
         savedCellTbl にインサートする
     */
-    private suspend fun insertSaved(createUser: String = "", data: Array<Array<CellData>> =
+    private suspend fun insertSaved(asChallenge: Boolean = false, data: Array<Array<CellData>> =
         Array(NumbergameData.NUM_OF_ROW) { Array(NumbergameData.NUM_OF_COL) { CellData(0, false) } })
     {
         val current = LocalDateTime.now()
@@ -126,6 +126,11 @@ class NumbergameViewModel(
         val currentString = current.format(formatter)
 
         // savedTbl に登録
+        val createUser = if(asChallenge) {
+                                    "課題保存"
+                                }else{
+                                    "一時保存"
+                                }
         val insertedId = appContainer.savedTblRepository.insert(
             SavedTbl(createUser = createUser, createDt = currentString)).toInt()
         // saveCellTbl に登録
@@ -139,7 +144,11 @@ class NumbergameViewModel(
                                 row = rowIdx,
                                 col = colIdx,
                                 num = cellData.num,
-                                init = cellData.init
+                                init = if(!asChallenge) {
+                                    cellData.init
+                                }else{
+                                    true                    //課題保存の場合、全て初期値
+                                }
                         )
                     )
                 }
@@ -192,10 +201,6 @@ class NumbergameViewModel(
                 // 選択中のセルの場合、
                 tmpData[rowIdx][colIdx].isSelected =  (rowIdx == selectedRow && colIdx == selectedCol)
 
-//                if(rowIdx == selectedRow && colIdx == selectedCol){
-//                    //セルを選択中にする
-//                    tmpData[rowIdx][colIdx].isSelected = true
-//                }
                 // 選択中のセルと同じ数字の場合（空白以外）、UIで強調表示するためフラグを設定
                 tmpData[rowIdx][colIdx].isSameNum = false
                 if(selectedNum != NumbergameData.NUM_NOT_SET) {
@@ -203,10 +208,6 @@ class NumbergameViewModel(
                         tmpData[rowIdx][colIdx].isSameNum = true
                     }
                 }
-//                //未設定セルの数をカウント
-//                if(gridData.data[rowIdx][colIdx].num == NumbergameData.NUM_NOT_SET){
-//                    //未設定セルの場合、未設定セルの数をカウントアップ
-//                    blankCellCnt++
             }
         }
         //未設定セルの数が０個の場合、ゲーム終了とする
@@ -250,7 +251,7 @@ class NumbergameViewModel(
                         errBtnNum = 0,
                     )
                     if (0 == sameSatisfiedCnt) {
-                        //TODO 文言をstring.xml に登録をどうするか？
+                        //TODO 文言をstring.xml に登録をどうするか？ context は使わないので放置
                         viewModelScope.launch(Dispatchers.IO) {
                             insertSatisfiedGrid(
                                 createUser = "正解到達",
@@ -309,8 +310,6 @@ class NumbergameViewModel(
         satisfiedGridData = satisfiedGridList.getSatisfied(satisfiedIdx)
 
         // 正解配列をランダムに並べ変える、９×９のセルに初期値設定する
-//
-        //TODO 正解配列…
         gridData.newGame(satisfiedGridData.getRandom(), blankCellCnt)
         //選択中セルの初期化
         selectedCol = IMPOSSIBLE_IDX
@@ -356,9 +355,8 @@ class NumbergameViewModel(
                         if (0 == dataCnt) {
                             //０件の場合データ追加
                             insertSatisfiedGrid(
-                                //TODO strings.xml の登録方法は要検討
-                                createUser = "検索機能",
-                                gridData = gridStr.toString()
+                                createUser = "検索機能",            //仮に固定文字にしておく
+                                gridData = gridStr.toString(),
                             )
                         }
                     }
@@ -420,13 +418,11 @@ class NumbergameViewModel(
 
     /*
             一時保存ボタンが押された時の処理
-            // TODO 問題として一時登録する場合の入力方法も要検討
      */
-    fun onSaveBtnClicked(){
+    fun onSaveBtnClicked(asChallenge:Boolean){
         viewModelScope.launch(Dispatchers.IO) {
             //０件の場合データ追加
-            //TODO strings.xml の登録方法は要検討
-            insertSaved(createUser = "一時保存", gridData.data)
+            insertSaved(asChallenge, gridData.data)
         }
     }
 }

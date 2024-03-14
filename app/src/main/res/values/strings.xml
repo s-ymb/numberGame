@@ -1,37 +1,65 @@
 <resources>
     <string name="app_name">Numbergame</string>
     <string name="back_button">Back</string>
-    <string name="delete">Delete</string>
-    <string name="delete_question">Are you sure you want to delete?</string>
-    <string name="resume">resume</string>
-    <string name="resume_question">Are you sure you want to resume?</string>
+
+    <string name="create_user_name">作成者：</string>
+    <string name="create_dt">作成日時：</string>
+
+    <string name="delete">このデータを削除する</string>
+    <string name="delete_question">本当に削除しますか?</string>
+    <string name="resume">このデータで再開する</string>
+    <string name="resume_question">ゲームを再開してよろしいでしょうか？</string>
+
     <string name="no_satisfiedGrid_description">正解パターンが登録されていません.</string>
     <string name="satisfiedGrid">satisfiedGrid</string>
     <string name="satisfiedGrid_tbl_title">正解パターンの一覧</string>
     <string name="satisfiedGrid_detail_title">正解パターンの詳細</string>
     <string name="satisfiedGrid_entry_title">正解パターン追加</string>
-    <string name="satisfiedGrid_create_user_name">作成者：</string>
-    <string name="satisfiedGrid_create_dt">作成日：</string>
+    <string name="satisfiedGrid_new_user_name">正解到達</string>        //新規の正解データの場合のユーザ名(view クラスからは？？？）
+    <string name="satisfiedGrid_search_user_name">検索機能</string>        //新規の正解データの場合のユーザ名(view クラスからは？？？）
+
 
     <string name="no_savedGrid_description">保存データが存在しません.</string>
     <string name="savedGrid_tbl_title">保存の一覧</string>
     <string name="savedGrid_detail_title">保存の詳細</string>
-    <string name="savedGrid_create_user_name">作成者：</string>
-    <string name="savedGrid_create_dt">作成日：</string>
+    <string name="savedGrid_save_user_name">一時保存</string>   //一時保存の場合のユーザ名
+    <string name="savedGrid_challenge_save_user_name">課題保存</string>   //課題保存の場合のユーザ名
 
 
     <string name="number_game_screen_title">Number Game</string>
+    <string name="number_game_org_satisfied_title">作成元：</string>
     <string name="congratulations">Congratulations!</string>
-    <string name="exit">終了</string>
-    <string name="play_again">新規</string>
-    <string name="searchResult">検索結果</string>
-    <string name="close">閉じる</string>
+
+    <string name="btn_num_delete">削除</string>
+
+    <string name="btn_exit">終了</string>
+    <string name="btn_new">新規</string>
+    <string name="btn_init_data">初期化</string>
+    <string name="btn_clear_data">全削除</string>
+    <string name="btn_search">検索</string>
+    <string name="btn_close">閉じる</string>
+
+    <string name="func_check_title">機能表示</string>
+
+    <string name="btn_satisfied_list">正解一覧</string>
+    <string name="btn_save_list">保存一覧</string>
+    <string name="btn_save">一時保存</string>
+    <string name="btn_save_challenge">課題保存</string>
+
+    <string name="slider_title1">新規時の空欄：</string>
+    <string name="slider_title2">個：上のスライドで増減</string>
+
+    <string name="search_result_title">選択中のセルの入力値毎の正解数は以下です。</string>
+    <string name="search_result_num">入力値</string>
+    <string name="search_result_cnt">正解数</string>
+
+
     <string name="err_btn_row_dup">同一行に同じ数字は選択出来ません</string>
     <string name="err_btn_col_dup">同一列に同じ数字は選択出来ません</string>
     <string name="err_btn_sq_dup">同一枠に同じ数字は選択出来ません</string>
 
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="attention">Attention</string>
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+    <string name="attention">注意！</string>
 
 </resources>
