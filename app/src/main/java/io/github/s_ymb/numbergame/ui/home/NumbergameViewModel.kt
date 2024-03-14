@@ -145,10 +145,10 @@ class NumbergameViewModel(
                                 col = colIdx,
                                 num = cellData.num,
                                 init = if(!asChallenge) {
-                                    cellData.init
-                                }else{
-                                    true                    //課題保存の場合、全て初期値
-                                }
+                                            cellData.init
+                                        }else{
+                                            true                    //課題保存の場合、全て初期値
+                                        }
                         )
                     )
                 }
@@ -213,8 +213,8 @@ class NumbergameViewModel(
         //未設定セルの数が０個の場合、ゲーム終了とする
         var isGameOver = true
         gridData.data.forEach {
-            it.forEach{
-                isGameOver = isGameOver && (it.num != NumbergameData.NUM_NOT_SET)
+            it.forEach{cell ->
+                isGameOver = isGameOver && (cell.num != NumbergameData.NUM_NOT_SET)
             }
         }
 
