@@ -57,6 +57,9 @@
     <string name="err_btn_row_dup">同一行に同じ数字は選択出来ません</string>
     <string name="err_btn_col_dup">同一列に同じ数字は選択出来ません</string>
     <string name="err_btn_sq_dup">同一枠に同じ数字は選択出来ません</string>
+    <string name="err_btn_cell_not_selected">入力する場所をタップしてください</string>
+
+    NOT_SELECTED
 
     <string name="yes">はい</string>
     <string name="no">いいえ</string>

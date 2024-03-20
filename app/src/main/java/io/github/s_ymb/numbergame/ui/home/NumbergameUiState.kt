@@ -19,8 +19,7 @@ data class NumbergameUiState(
     val currentSearchResult: Array<Int> = Array(NumbergameData.KIND_OF_DATA + 1) { 0 },
     val isGameOver: Boolean = false,
     val sameSatisfiedCnt: Int = -1,                 // 登録済みの正解件数（-1：未検索）
-    val errBtnMsgID:dupErr = dupErr.NO_DUP,
-    val errBtnNum: Int = 0,
+    val errBtnMsgID:Int = dupErr.NO_DUP.ordinal,
     val blankCellCnt: Int = 0,
 ) {
     override fun equals(other: Any?): Boolean {

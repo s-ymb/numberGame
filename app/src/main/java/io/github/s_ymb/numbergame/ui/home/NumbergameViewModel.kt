@@ -17,6 +17,7 @@ import io.github.s_ymb.numbergame.data.ScreenBtnData
 import io.github.s_ymb.numbergame.data.ScreenCellData
 import io.github.s_ymb.numbergame.data.dupErr
 import io.github.s_ymb.numbergame.data.toSatisfiedGrid
+import io.github.s_ymb.numbergame.ui.ToastUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,10 @@ class NumbergameViewModel(
     // Game UI state
     private val _uiState = MutableStateFlow(NumbergameUiState())
     val uiState: StateFlow<NumbergameUiState> = _uiState.asStateFlow()
+
+    // Toast UI state
+    private val _uiStateToast = MutableStateFlow(ToastUiState())
+    val uiStateToast = _uiStateToast.asStateFlow()
 
     private val gridData = GridData()
     private var satisfiedGridData = SatisfiedGridData()                 //表示中の正解リスト
@@ -126,6 +131,7 @@ class NumbergameViewModel(
         val currentString = current.format(formatter)
 
         // savedTbl に登録
+        // TODO string.xml での登録値の整合性
         val createUser = if(asChallenge) {
                                     "課題保存"
                                 }else{
@@ -180,11 +186,9 @@ class NumbergameViewModel(
         // ９×９の数字の配列をui state に設定する
         // 選択中のセルと同じ数字の表示を変える為に選択中のセルの数字を保存
         // TODO 選択中のセルに入力された値がエラーの場合の設定方法を要件等
-        val selectedNum =
+        var selectedNum = IMPOSSIBLE_NUM
         if(selectedRow != IMPOSSIBLE_NUM && selectedCol != IMPOSSIBLE_NUM){
-            gridData.data[selectedRow][selectedCol].num
-        }else{
-            IMPOSSIBLE_NUM
+            selectedNum = gridData.data[selectedRow][selectedCol].num
         }
 
         // セルに
@@ -219,7 +223,7 @@ class NumbergameViewModel(
         }
 
         // 空欄が０件の場合、ゲーム終了なので未登録の正解データの場合はデータベースに追加する
-        // TODO 定数の扱い　dataCnt
+        // TODO 定数の扱い　sameSatisfiedCnt
         var sameSatisfiedCnt: Int = -1
         if(isGameOver){
             //正解情報の検索キー（＝データ）となる文字列を作成
@@ -247,8 +251,6 @@ class NumbergameViewModel(
                         blankCellCnt = blankCellCnt,
                         isGameOver = isGameOver,
                         sameSatisfiedCnt = sameSatisfiedCnt,
-                        errBtnMsgID = dupErr.NO_DUP,
-                        errBtnNum = 0,
                     )
                     if (0 == sameSatisfiedCnt) {
                         //TODO 文言をstring.xml に登録をどうするか？ context は使わないので放置
@@ -271,8 +273,6 @@ class NumbergameViewModel(
                             blankCellCnt = blankCellCnt,
                             isGameOver = isGameOver,
                             sameSatisfiedCnt = sameSatisfiedCnt,
-                            errBtnMsgID = dupErr.NO_DUP,
-                            errBtnNum = 0,
         )
     }
 
@@ -323,7 +323,7 @@ class NumbergameViewModel(
         正解パターン数検索
     */
     fun searchAnsCnt() {
-        val ansCnt = Array(NumbergameData.KIND_OF_DATA + 1) { 0 }
+        val ansCnt = Array(NumbergameData.KIND_OF_DATA + 1) { IMPOSSIBLE_NUM }
         var retList: MutableList<Array<Array<Int>>>
         if ((selectedRow != IMPOSSIBLE_IDX) && (selectedCol != IMPOSSIBLE_IDX)) {
             for (num in 1..NumbergameData.KIND_OF_DATA) {
@@ -341,20 +341,13 @@ class NumbergameViewModel(
                         }
                         gridStr.append(rowStr)
                     }
-                    /*
-                    for (rowIdx in 0 until NumbergameData.NUM_OF_ROW) {
-                        for (colIdx in 0 until NumbergameData.NUM_OF_COL) {
-                            //セルの設定
-                            gridDataString += it[rowIdx][colIdx].toString()
-                        }
-                    }
-                    */
                     viewModelScope.launch(Dispatchers.IO) {
                         //すでに登録されているデータ数を検索(0 or 1 件)
                         val dataCnt = appContainer.satisfiedGridTblRepository.getCnt(gridStr.toString())
                         if (0 == dataCnt) {
                             //０件の場合データ追加
                             insertSatisfiedGrid(
+                                //TODO 文言をstring.xml に登録をどうするか？ context は使わないので放置
                                 createUser = "検索機能",            //仮に固定文字にしておく
                                 gridData = gridStr.toString(),
                             )
@@ -386,27 +379,36 @@ class NumbergameViewModel(
         番号のボタンが押された場合、選択中のセルに番号を設定する
      */
     fun onNumberBtnClicked(number: Int){
+        var ret = dupErr.NOT_SELECTED       //とりあえず未選択状態
         if((selectedRow != IMPOSSIBLE_IDX) && (selectedCol != IMPOSSIBLE_IDX)) {
             // 画面で数字を入力する場所が選択されていた場合
-            val ret = gridData.setData(selectedRow, selectedCol, number, false)
-            if (dupErr.NO_DUP == ret) {
-                // 設定できた場合、新しいデータでui_state を再構築
-                setGridDataToUiState()
-            } else {
-                val currentUiState = _uiState
-                val newUiSatateValue =
-                    currentUiState.value.copy(errBtnNum = number, errBtnMsgID = ret)
-                _uiState.value = newUiSatateValue
-
-//            _uiState.update { currentUiState ->
-//                currentUiState.copy(
-//                    errBtnNum = number,
-//                    errBtnMsgID = ret,
-//                )
-//            }
-//            val newUiState = _uiState.value
-            }
+            ret = gridData.setData(selectedRow, selectedCol, number, false)
        }
+        // TODO トーストのメッセージは仮置き(view Model なので strings.xml からの取得方法要検討
+        if(dupErr.NO_DUP != ret) {
+            val msg = when (ret) {
+                dupErr.ROW_DUP -> "同一行に同じ数字は入力出来ません"
+                dupErr.COL_DUP -> "同一列に同じ数字は入力出来ません"
+                dupErr.SQ_DUP -> "同一枠に同じ数字は入力出来ません"
+                dupErr.FIX_DUP -> "初期値は変更できません"
+                dupErr.NOT_SELECTED -> "数字を入力する場所をタップしてください"
+                else -> "???????"           //無いはず
+            }
+
+            _uiStateToast.value = ToastUiState(
+                showToast = true,
+                toastMsg = msg,
+            )
+        }
+        setGridDataToUiState()
+
+    }
+
+ /*
+        Toast 表示後に   _uiStateToast を表示済みに更新
+ */
+    fun toastShown(){
+        _uiStateToast.value = ToastUiState()
     }
 
     /*

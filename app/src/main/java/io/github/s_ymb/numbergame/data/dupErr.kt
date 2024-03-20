@@ -6,4 +6,5 @@ enum class dupErr {
     COL_DUP,    //列で重複
     SQ_DUP,     //四角いエリアで重複
     FIX_DUP,         //初期値なので変更不可
+    NOT_SELECTED,    //そもそも入力場所が選択されていない
 }

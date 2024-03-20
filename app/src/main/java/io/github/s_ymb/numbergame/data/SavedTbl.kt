@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class SavedTbl(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    // TODO 日付データの扱いを日付型にする
     @ColumnInfo(name = "create_dt")
     val createDt: String = "",
     @ColumnInfo(name = "create_user")

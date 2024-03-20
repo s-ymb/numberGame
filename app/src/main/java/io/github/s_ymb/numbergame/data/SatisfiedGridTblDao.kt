@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SatisfiedGridTblDao {
 
-    @Query("SELECT * FROM SatisfiedGridTbl ORDER BY create_dt ASC")
+    @Query("SELECT * FROM SatisfiedGridTbl ORDER BY create_dt DESC")
     fun getAllGrids(): Flow<List<SatisfiedGridTbl>>
 
-    @Query("SELECT * FROM SatisfiedGridTbl ORDER BY create_dt ASC")
+    @Query("SELECT * FROM SatisfiedGridTbl ORDER BY create_dt DESC")
     fun getAll(): List<SatisfiedGridTbl>
 
     @Query("SELECT * FROM SatisfiedGridTbl WHERE gridData = :data")

@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.animation.LinearInterpolator
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,6 +68,7 @@ fun GameScreen(
     gameViewModel: NumbergameViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val gameUiState by gameViewModel.uiState.collectAsState()
+    val uiStateToast by gameViewModel.uiStateToast.collectAsState()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
@@ -104,23 +106,20 @@ fun GameScreen(
                 .size(8.dp)
             //.background(color=Color.Red)
         )
-        //TODO 表示方法要再検討  数字選択時に入力値エラーが発生した場合toastで表示
-//        if (gameUiState.errBtnMsgID != dupErr.NO_DUP) {
-//        if (gameUiState.errBtnMsgID == dupErr.ROW_DUP ||
-//            gameUiState.errBtnMsgID == dupErr.COL_DUP ||
-//            gameUiState.errBtnMsgID == dupErr.SQ_DUP
-//        ) {
-//            val context = LocalContext.current
-//            val msg = when (gameUiState.errBtnMsgID) {
-//                dupErr.ROW_DUP -> context.getString(R.string.err_btn_row_dup)
-//                dupErr.COL_DUP -> context.getString(R.string.err_btn_col_dup)
-//                dupErr.SQ_DUP -> context.getString(R.string.err_btn_sq_dup)
-//                else -> ""
-//            }
-//            val toast = Toast.makeText(context, msg, Toast.LENGTH_LONG)
-//            //toast.setGravity(Gravity.TOP, 0, 0);
-//            toast.show()
-//        }
+
+        // エラーメッセージ用のToast を表示
+        if(uiStateToast.showToast) {
+            val context = LocalContext.current
+            val toast = Toast.makeText(context, uiStateToast.toastMsg, Toast.LENGTH_LONG)
+            // TODO 設定しても下端に出るので置いておく
+            // toast.setGravity(Gravity.TOP, 0, 0);
+            toast.show()
+            // toast 表示済に更新
+            gameViewModel.toastShown()
+        }
+//                val toast = Toast.makeText(context, msg, Toast.LENGTH_LONG)
+//                //toast.setGravity(Gravity.TOP, 0, 0);
+//                toast.show()
 
 
         // とりあえず検索結果を表示するレイアウトを入れる
@@ -605,29 +604,16 @@ private fun SearchResultLayout(
     }
 }
 
+/*
+        保存ボタンを表示
+ */
+
 @Composable
 private fun SaveBtnLayout(
-//    正解一覧ボタンは終了ボタンの横に移動
-//    onGoSatisfiedGridTbl: () -> Unit,
     onGoSavedGridTbl: () -> Unit,
     onSavedBtnClicked: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ){
-    //チェックボタン廃止
-//    val checked = remember { mutableStateOf(false) }
-//    Row(
-//        verticalAlignment = Alignment.Top,
-//        modifier = modifier,
-//    ) {
-//        Checkbox(
-//            modifier = Modifier
-//                .size(24.dp),
-//            checked = checked.value,
-//            onCheckedChange = { checked.value = it },
-//        )
-//        Text(stringResource(R.string.func_check_title))
-//    }
-//    if(checked.value){
         Row(
             verticalAlignment = Alignment.Top,
             modifier = modifier,
@@ -710,13 +696,11 @@ private fun FinalDialog(
                     activity.finish()
                 }
             ) {
-                // TODO strings.xml に移動する
                 Text(text = stringResource(R.string.btn_exit))
             }
         },
         confirmButton = {
             TextButton(onClick = onNewGameBtnClicked) {
-                // TODO strings.xml に移動する
                 Text(text = stringResource(R.string.btn_new))
             }
         }

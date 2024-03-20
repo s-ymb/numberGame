@@ -9,6 +9,7 @@ data class SatisfiedGridTbl(
     @PrimaryKey(autoGenerate = false)
     val gridData: String = "",
     @ColumnInfo(name = "create_dt")
+    // TODO 日付データの扱いを日付型にする
     val createDt: String = "",
     @ColumnInfo(name = "create_user")
     val createUser: String = "",
