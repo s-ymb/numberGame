@@ -68,7 +68,7 @@ fun GameScreen(
     gameViewModel: NumbergameViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val gameUiState by gameViewModel.uiState.collectAsState()
-    val uiStateToast by gameViewModel.uiStateToast.collectAsState()
+    val toastUiState by gameViewModel.toastUiState.collectAsState()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier,
@@ -108,9 +108,9 @@ fun GameScreen(
         )
 
         // エラーメッセージ用のToast を表示
-        if(uiStateToast.showToast) {
+        if(toastUiState.showToast) {
             val context = LocalContext.current
-            val toast = Toast.makeText(context, uiStateToast.toastMsg, Toast.LENGTH_LONG)
+            val toast = Toast.makeText(context, toastUiState.toastMsg, Toast.LENGTH_LONG)
             // TODO 設定しても下端に出るので置いておく
             // toast.setGravity(Gravity.TOP, 0, 0);
             toast.show()
@@ -131,7 +131,7 @@ fun GameScreen(
         // スライダーを表示
         SliderLayout(
             defaultPos = gameUiState.blankCellCnt.toFloat(),
-            onValueChangeFinished = { num: Int -> gameViewModel.setFixCellCnt(num) },
+            onValueChangeFinished = { num: Int -> gameViewModel.setBlankCellCnt(num) },
             modifier = modifier,
         )
 
@@ -296,7 +296,7 @@ fun GameOverNumberGridLayout(
     // 空欄が０件の場合、ゲーム終了なので未登録の正解データの場合はデータベースに追加する
     // TODO 定数の扱い　dataCnt の関連事項
     //正解の件数判定が終了していてアニメーションがスタートしていない場合開始する
-    if(!animStart.value && uiState.sameSatisfiedCnt != -1) {
+    if(!animStart.value) {
         animator.start()
         animStart.value = true
     }
@@ -523,6 +523,7 @@ private fun SliderLayout(
     ) {
             Slider(
                 value = sliderPosition,
+                // TODO 固定セルの初期値と設定できる範囲の検討が必要
                 valueRange = 30f..60f,
                 onValueChange = { sliderPosition = it },
                 onValueChangeFinished ={onValueChangeFinished(sliderPosition.toInt())},

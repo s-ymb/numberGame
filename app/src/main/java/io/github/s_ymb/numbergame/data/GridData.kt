@@ -1,6 +1,6 @@
 package io.github.s_ymb.numbergame.data
 
-import io.github.s_ymb.numbergame.data.dupErr.NO_DUP
+import io.github.s_ymb.numbergame.data.DupErr.NO_DUP
 import kotlin.random.Random
 
 /*
@@ -16,9 +16,9 @@ class GridData(
         同じ数字が範囲内に重複する場合、範囲に応じたエラーを返す。
         （初期値の上書き判定は行わない → view で制限をかける）
      */
-    fun setData(row: Int, col: Int, newNum: Int, isInit: Boolean): dupErr {
+    fun setData(row: Int, col: Int, newNum: Int, isInit: Boolean): DupErr {
         if(data[row][col].init){
-            return dupErr.FIX_DUP      //後で直す
+            return DupErr.FIX_DUP      //後で直す
         }
 
         // いままでに設定されている値をコピー
@@ -30,7 +30,7 @@ class GridData(
         }
         // コピーした配列がNumbergameのルールに沿っているかチェックする
         // チェックロジックは継承元のNumbergameDataにて実装
-        val dataCheckResult: dupErr = checkData(tmp, row, col, newNum)
+        val dataCheckResult: DupErr = checkData(tmp, row, col, newNum)
         if (NO_DUP == dataCheckResult) {
             //チェックOKの場合、データに反映する。
             data[row][col].num = newNum
@@ -54,7 +54,7 @@ class GridData(
                     // 未設定列を見つけたら
                     for (setNum in 1..KIND_OF_DATA) {
                         // 1 ～ 9 の数字を試してみる
-                        val ret: dupErr = checkData(tmp, rowIdx, colIdx, setNum)
+                        val ret: DupErr = checkData(tmp, rowIdx, colIdx, setNum)
                         if (NO_DUP == ret) {
                             // 値をセットして次の再帰呼びだし
                             tmp[rowIdx][colIdx] = setNum
@@ -137,7 +137,7 @@ class GridData(
             }
         }
         // 指定セルに値を設定してみて回答が存在しているかチェック
-        val ret: dupErr = checkData(tmp, checkRowId, checkColId, checkNum)
+        val ret: DupErr = checkData(tmp, checkRowId, checkColId, checkNum)
         if (NO_DUP == ret) {
             // 値をセットして次の再帰呼びだし
             tmp[checkRowId][checkColId] = checkNum

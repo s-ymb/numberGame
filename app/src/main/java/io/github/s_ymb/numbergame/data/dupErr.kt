@@ -1,6 +1,6 @@
 package io.github.s_ymb.numbergame.data
 
-enum class dupErr {
+enum class DupErr {
     NO_DUP,     //重複なし
     ROW_DUP,    //行で重複
     COL_DUP,    //列で重複

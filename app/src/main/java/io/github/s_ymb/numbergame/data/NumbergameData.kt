@@ -16,7 +16,7 @@ open class NumbergameData {
     /*
     コピーのデータ配列に指定された位置、値が設定できるかチェックする
 */
-    protected fun checkData(targetData: Array<Array<Int>>, row: Int, col: Int, newNum: Int): dupErr {
+    protected fun checkData(targetData: Array<Array<Int>>, row: Int, col: Int, newNum: Int): DupErr {
         val copyData: Array<Array<Int>> = Array(NUM_OF_ROW) { Array(NUM_OF_COL) { 0 } }
         for (rowIdx in 0 until NUM_OF_ROW) {
             for (colIdx in 0 until NUM_OF_COL) {
@@ -27,17 +27,17 @@ open class NumbergameData {
         copyData[row][col] = newNum
         // 行重複チェック(変更対象のエリアのみチェック)
         if (!rowCheck(copyData, row)) {
-            return dupErr.ROW_DUP
+            return DupErr.ROW_DUP
         }
         // 列重複チェック(変更対象のエリアのみチェック)
         if (!colCheck(copyData, col)) {
-            return dupErr.COL_DUP
+            return DupErr.COL_DUP
         }
         // 平方重複チェック(変更対象のエリアのみチェック)
         if (!sqrCheck(copyData, row, col)) {
-            return dupErr.SQ_DUP
+            return DupErr.SQ_DUP
         }
-        return dupErr.NO_DUP
+        return DupErr.NO_DUP
     }
 
     /*

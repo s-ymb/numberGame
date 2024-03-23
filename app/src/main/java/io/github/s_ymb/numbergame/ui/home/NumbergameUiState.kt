@@ -3,7 +3,6 @@ package io.github.s_ymb.numbergame.ui.home
 import io.github.s_ymb.numbergame.data.NumbergameData
 import io.github.s_ymb.numbergame.data.ScreenBtnData
 import io.github.s_ymb.numbergame.data.ScreenCellData
-import io.github.s_ymb.numbergame.data.dupErr
 
 data class NumbergameUiState(
     val currentData: Array<Array<ScreenCellData>> = Array(NumbergameData.NUM_OF_ROW)
@@ -16,10 +15,9 @@ data class NumbergameUiState(
     val currentDataOrgName: String = "",            // データの元（シャッフル前の名前）
     val currentDataOrgCreateDt: String = "",        // データの元（シャッフル前の作成日）
     val haveSearchResult: Boolean = false,
-    val currentSearchResult: Array<Int> = Array(NumbergameData.KIND_OF_DATA + 1) { 0 },
+    val currentSearchResult: Array<Int> = Array(NumbergameData.KIND_OF_DATA + 1) { NumbergameData.IMPOSSIBLE_NUM },
     val isGameOver: Boolean = false,
     val sameSatisfiedCnt: Int = -1,                 // 登録済みの正解件数（-1：未検索）
-    val errBtnMsgID:Int = dupErr.NO_DUP.ordinal,
     val blankCellCnt: Int = 0,
 ) {
     override fun equals(other: Any?): Boolean {
