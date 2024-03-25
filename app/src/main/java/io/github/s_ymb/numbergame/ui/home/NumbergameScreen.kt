@@ -551,7 +551,7 @@ private fun SearchResultLayout(
 ){
     // TODO strings.xml に移動する
     Text(
-        text = stringResource(R.string.savedGrid_tbl_title),
+        text = stringResource(R.string.search_result_title),
         textAlign = TextAlign.Center,
         fontSize = 16.sp,
     )
